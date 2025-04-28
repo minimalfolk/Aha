@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compression Tool</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Image Compression Tool</h1>
+      <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+    </header>
+
+    <section class="upload-section">
+      <div id="uploadBox" class="upload-box">
+        <p>Drag & Drop or Click to Upload Images</p>
+        <input type="file" id="fileInput" multiple accept="image/*" />
+      </div>
+
+      <div id="previewContainer" class="preview-container"></div>
+    </section>
+
+    <div id="processing" class="processing">
+      <p>Processing...</p>
+    </div>
+
+    <div id="stats" class="stats"></div>
+    <button id="downloadButton" class="download-button" style="display: none;">Download All Compressed Images</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
