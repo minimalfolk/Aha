@@ -89,19 +89,24 @@ resizeBtn.addEventListener("click", () => {
     newSize.textContent = `${(blob.size / 1024).toFixed(2)} KB`;
 
     downloadBtn.onclick = () => {
-  const a = document.createElement("a");
-  const targetKB = customSize.value ? parseInt(customSize.value) : parseInt(presetSize.value);
-  const formattedSize = `${targetKB}KB`; // Format the size for the filename
+      const a = document.createElement("a");
+      const formattedSize = `${targetKB}KB`; // Format the size for the filename
 
-  // Set the download filename with target size in the name (e.g., name_200KB.jpg)
-  const fileExtension = format.split("/")[1]; // Get the file extension (e.g., 'jpeg' or 'jpg')
-  a.href = url;
-  a.download = `${originalFile.name.split(".")[0]}_${formattedSize}.${fileExtension}`;
-  a.click();
-};
+      // Set the download filename with target size in the name (e.g., name_200KB.jpg)
+      const fileExtension = format.split("/")[1]; // Get the file extension (e.g., 'jpeg' or 'jpg')
+      a.href = url;
+      a.download = `${originalFile.name.split(".")[0]}_${formattedSize}.${fileExtension}`;
+      a.click();
+    };
 
-loadingIndicator.hidden = true;
-resizeBtn.disabled = false;
+    loadingIndicator.hidden = true;
+    resizeBtn.disabled = false;
+  };
+
+  const reader = new FileReader();
+  reader.onload = (e) => (img.src = e.target.result);
+  reader.readAsDataURL(originalFile);
+});
 
 async function compressCanvas(canvas, format, targetSize, minSize) {
   let quality = 0.95;
