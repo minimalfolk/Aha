@@ -3,33 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Compression Tool</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Advanced Image Resizer</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- For PDF conversion -->
 </head>
 <body>
+  <section class="resize-image">
+    <h1>Advanced Image Resizer</h1>
+    <p>Drag and drop an image below to start.</p>
 
-  <div class="container">
-    <header>
-      <h1>Image Compression Tool</h1>
-      <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
-    </header>
-
-    <section class="upload-section">
-      <div id="uploadBox" class="upload-box">
-        <p>Drag & Drop or Click to Upload Images</p>
-        <input type="file" id="fileInput" multiple accept="image/*" />
-      </div>
-
-      <div id="previewContainer" class="preview-container"></div>
-    </section>
-
-    <div id="processing" class="processing">
-      <p>Processing...</p>
+    <div class="upload-box" id="uploadBox" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+      <p>Drag & Drop or Click to Upload Image</p>
+      <input type="file" id="imageInput" accept="image/*" hidden>
     </div>
 
-    <div id="stats" class="stats"></div>
-    <button id="downloadButton" class="download-button" style="display: none;">Download All Compressed Images</button>
-  </div>
+    <div id="originalPreview" class="preview-container" hidden>
+      <h3>Original Image</h3>
+      <img id="originalImage" alt="Original Image">
+      <p id="originalDetails"></p>
+    </div>
+
+    <div class="resize-options" hidden>
+      <h3>Resize Settings</h3>
+
+      <label for="newWidth">Width (px):</label>
+      <input type="number" id="newWidth" min="1">
+
+      <label for="newHeight">Height (px):</label>
+      <input type="number" id="newHeight" min="1">
+
+      <label for="newDPI">Change DPI:</label>
+      <input type="number" id="newDPI" min="1" max="1200" placeholder="Default is 72">
+
+      <label for="formatSelect">Convert to:</label>
+      <select id="formatSelect">
+        <option value="image/jpeg">JPEG/JPG</option>
+        <option value="image/png">PNG</option>
+        <option value="application/pdf">PDF</option>
+      </select>
+
+      <button id="resizeBtn" disabled>Resize Now</button>
+    </div>
+
+    <div id="loadingIndicator" hidden>
+      <p>Processing Image...</p>
+    </div>
+
+    <div id="resizedPreview" class="preview-container" hidden>
+      <h3>Resized Image</h3>
+      <img id="resizedImage" alt="Resized Image">
+      <p><strong>Previous Size:</strong> <span id="previousSize"></span></p>
+      <p><strong>New Size:</strong> <span id="newSize"></span></p>
+      <button id="downloadBtn">Download Resized Image</button>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
