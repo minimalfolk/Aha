@@ -77,6 +77,9 @@ resizeBtn.addEventListener("click", () => {
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
 
+    // Apply enhancement function
+    applyEnhancement(ctx, width, height);
+
     let blob = await compressCanvas(canvas, format, targetBytes, minBytes);
     const url = URL.createObjectURL(blob);
 
@@ -88,7 +91,7 @@ resizeBtn.addEventListener("click", () => {
     downloadBtn.onclick = () => {
       const a = document.createElement("a");
       a.href = url;
-      a.download = `resized-${originalFile.name.split(".")[0]}.${format.split("/")[1]}`;
+      a.download = `enhanced-${originalFile.name.split(".")[0]}.${format.split("/")[1]}`;
       a.click();
     };
 
@@ -142,4 +145,42 @@ function getBlob(canvas, type, quality = 1.0) {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob), type, quality);
   });
+}
+
+function applyEnhancement(ctx, width, height) {
+  // Apply sharpening to the image
+  const sharpenKernel = [
+    [-1, -1, -1],
+    [-1,  9, -1],
+    [-1, -1, -1],
+  ];
+
+  // Apply the sharpen kernel to the canvas image data
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  const widthPx = imageData.width;
+  const heightPx = imageData.height;
+
+  for (let y = 1; y < heightPx - 1; y++) {
+    for (let x = 1; x < widthPx - 1; x++) {
+      let r = 0, g = 0, b = 0;
+
+      for (let ky = -1; ky <= 1; ky++) {
+        for (let kx = -1; kx <= 1; kx++) {
+          const px = (y + ky) * widthPx + (x + kx);
+          const weight = sharpenKernel[ky + 1][kx + 1];
+          r += data[px * 4] * weight;
+          g += data[px * 4 + 1] * weight;
+          b += data[px * 4 + 2] * weight;
+        }
+      }
+
+      const idx = (y * widthPx + x) * 4;
+      data[idx] = Math.min(255, Math.max(0, r));
+      data[idx + 1] = Math.min(255, Math.max(0, g));
+      data[idx + 2] = Math.min(255, Math.max(0, b));
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
 }
