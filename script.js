@@ -14,10 +14,9 @@ const loadingIndicator = document.getElementById("loadingIndicator");
 
 const newWidth = document.getElementById("newWidth");
 const newHeight = document.getElementById("newHeight");
-const newDPI = document.getElementById("newDPI");
-const presetSize = document.getElementById("presetSize");
-const customSize = document.getElementById("customSize");
 const formatSelect = document.getElementById("formatSelect");
+const customSize = document.getElementById("customSize");
+const presetSize = document.getElementById("presetSize");
 
 let originalFile;
 let canvas = document.createElement("canvas");
@@ -69,9 +68,9 @@ resizeBtn.addEventListener("click", () => {
     const width = newWidth.value ? parseInt(newWidth.value) : img.width;
     const height = newHeight.value ? parseInt(newHeight.value) : img.height;
     const format = formatSelect.value;
-    const maxSizeKB = customSize.value ? parseInt(customSize.value) : parseInt(presetSize.value);
-    const targetBytes = maxSizeKB * 1024;
-    const minBytes = targetBytes - 3 * 1024;
+    const targetKB = customSize.value ? parseInt(customSize.value) : parseInt(presetSize.value);
+    const targetBytes = targetKB * 1024;
+    const minBytes = targetBytes - 3 * 1024; // Allow 3KB margin below the target size
 
     canvas.width = width;
     canvas.height = height;
@@ -106,24 +105,19 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
   let quality = 0.95;
   let blob = await getBlob(canvas, format, quality);
   let attempts = 0;
-  const targetBytes = targetSize * 1024;
-  const maxBytes = targetBytes + 2048; // Allow 2 KB above the target size
-  const minBytes = targetBytes - 2048; // Allow 2 KB below the target size
+  const maxBytes = targetSize;
+  const minBytes = minSize;
 
   // Start compression loop
-  while ((blob.size > maxBytes || blob.size < minBytes) && quality > 0.05 && attempts < 20) {
-    if (blob.size > maxBytes) {
-      quality -= 0.05; // Reduce quality if too large
-    } else if (blob.size < minBytes) {
-      quality += 0.01; // Increase quality if too small
-    }
+  while (blob.size > maxBytes && quality > 0.05 && attempts < 20) {
+    quality -= 0.05; // Reduce quality if the file is too large
     blob = await getBlob(canvas, format, quality);
     attempts++;
   }
 
-  // If still out of range, adjust dimensions
+  // If the file is still too large after adjusting quality, scale down the image dimensions proportionally
   if (blob.size > maxBytes) {
-    const ratio = Math.sqrt(targetBytes / blob.size); // Reduce image dimensions proportionally
+    const ratio = Math.sqrt(maxBytes / blob.size); // Proportional size reduction factor
     const newWidth = Math.floor(canvas.width * ratio);
     const newHeight = Math.floor(canvas.height * ratio);
     const tempCanvas = document.createElement("canvas");
@@ -131,7 +125,14 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
     tempCanvas.height = newHeight;
     const tempCtx = tempCanvas.getContext("2d");
     tempCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
-    return await compressCanvas(tempCanvas, format, targetSize, minSize); // Recurse if still too large
+
+    // Recurse to compress the scaled image
+    return await compressCanvas(tempCanvas, format, targetSize, minSize);
+  }
+
+  // Ensure the final size is within the acceptable range (target size or less)
+  if (blob.size > maxBytes) {
+    return compressCanvas(canvas, format, targetSize, minSize); // Recursion if still too large
   }
 
   return blob;
