@@ -70,15 +70,14 @@ resizeBtn.addEventListener("click", () => {
     const format = formatSelect.value;
     const targetKB = customSize.value ? parseInt(customSize.value) : parseInt(presetSize.value);
     const targetBytes = targetKB * 1024;
-    const minBytes = targetBytes - 3 * 1024; // Allow 3KB margin below the target size
+    const minBytes = targetBytes - 3 * 1024;
 
     canvas.width = width;
     canvas.height = height;
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
 
-    // Apply enhancement function
-    applyEnhancement(ctx, width, height);
+    applyEnhancement(ctx, width, height); // Optional enhancement step
 
     let blob = await compressCanvas(canvas, format, targetBytes, minBytes);
     const url = URL.createObjectURL(blob);
@@ -90,12 +89,11 @@ resizeBtn.addEventListener("click", () => {
 
     downloadBtn.onclick = () => {
       const a = document.createElement("a");
-      const formattedSize = `${targetKB}KB`; // Format the size for the filename
-
-      // Set the download filename with target size in the name (e.g., name_200KB.jpg)
-      const fileExtension = format.split("/")[1]; // Get the file extension (e.g., 'jpeg' or 'jpg')
+      const fileExtension = format.split("/")[1];
+      const cleanName = originalFile.name.replace(/\.(svg|xml|jpg|jpeg|png|webp)+/gi, '');
+      const formattedSize = `${targetKB}KB`;
       a.href = url;
-      a.download = `${originalFile.name.split(".")[0]}_${formattedSize}.${fileExtension}`;
+      a.download = `${cleanName}_${formattedSize}.${fileExtension}`;
       a.click();
     };
 
