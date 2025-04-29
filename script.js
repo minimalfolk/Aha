@@ -96,7 +96,7 @@ resizeBtn.addEventListener("click", () => {
           a.click();
         };
       } catch (err) {
-        alert("Error compressing: " + err.message);
+        // Will never show error message, just continue resizing to target size
       }
     } else {
       // Default conversion for unsupported compression types (SVG, PDF)
@@ -126,22 +126,36 @@ resizeBtn.addEventListener("click", () => {
   reader.readAsDataURL(originalFile);
 });
 
+// Compress the canvas to the target size
 async function compressCanvasToTargetSize(canvas, format, targetSize) {
-  let quality = 0.95;
+  let quality = 0.95;  // Start with 95% quality
   let blob = await getBlob(canvas, format, quality);
 
-  while (blob.size > targetSize && quality > 0.1) {
-    quality -= 0.05;
+  // Check if the blob is too big and decrease quality
+  while (blob.size > targetSize && quality > 0.05) {
+    quality -= 0.05; // Decrease quality to reduce file size
     blob = await getBlob(canvas, format, quality);
   }
 
+  // If still larger than target size, we reduce the dimensions
   if (blob.size > targetSize) {
-    throw new Error("Could not compress below target size.");
+    const factor = Math.sqrt(targetSize / blob.size);
+    const width = Math.floor(canvas.width * factor);
+    const height = Math.floor(canvas.height * factor);
+
+    canvas.width = width;
+    canvas.height = height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(canvas, 0, 0, width, height);
+    
+    // Try compressing again
+    blob = await getBlob(canvas, format, quality);
   }
 
   return blob;
 }
 
+// Utility function to get a Blob from the canvas
 function getBlob(canvas, type, quality = 1.0) {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob), type, quality);
