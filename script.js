@@ -107,11 +107,12 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
   let blob = await getBlob(canvas, format, quality);
   let attempts = 0;
 
+  // Adjust the quality of the image until the blob is in the target size range
   while ((blob.size > targetSize || blob.size < minSize) && quality > 0.05 && attempts < 20) {
     if (blob.size > targetSize) {
-      quality -= 0.05;
+      quality -= 0.05; // Lower the quality if the image is too large
     } else if (blob.size < minSize) {
-      quality += 0.01;
+      quality += 0.01; // Increase the quality if the image is too small
       if (quality > 1.0) break;
     }
     blob = await getBlob(canvas, format, quality);
@@ -119,6 +120,7 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
   }
 
   if (blob.size > targetSize) {
+    // If the image is still too large, reduce the dimensions
     const ratio = Math.sqrt(targetSize / blob.size);
     const newWidth = Math.floor(canvas.width * ratio);
     const newHeight = Math.floor(canvas.height * ratio);
@@ -127,7 +129,7 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
     tempCanvas.height = newHeight;
     const tempCtx = tempCanvas.getContext("2d");
     tempCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
-    return await compressCanvas(tempCanvas, format, targetSize, minSize);
+    return await compressCanvas(tempCanvas, format, targetSize, minSize); // Recurse with the smaller dimensions
   }
 
   return blob;
