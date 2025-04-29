@@ -148,25 +148,50 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
   return blob;
 }
 
-function getBlob(canvas, type, quality = 1.0) {
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob), type, quality);
-  });
-}
-
 function applyEnhancement(ctx, width, height) {
-  // Apply sharpening to the image
-  const sharpenKernel = [
-    [-1, -1, -1],
-    [-1,  9, -1],
-    [-1, -1, -1],
-  ];
-
-  // Apply the sharpen kernel to the canvas image data
+  // Apply contrast and saturation adjustment
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
-  const widthPx = imageData.width;
-  const heightPx = imageData.height;
+
+  // Contrast and Saturation Enhancements
+  for (let i = 0; i < data.length; i += 4) {
+    // Get current RGB values
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+
+    // Increase contrast (simple contrast formula: newValue = (value - 128) * factor + 128)
+    const contrastFactor = 1.2;  // Increase or decrease for more/less contrast
+    r = (r - 128) * contrastFactor + 128;
+    g = (g - 128) * contrastFactor + 128;
+    b = (b - 128) * contrastFactor + 128;
+
+    // Increase saturation (simple saturation formula: value = value * factor)
+    const saturationFactor = 1.1;  // Increase or decrease for more/less saturation
+    r = Math.min(255, Math.max(0, r * saturationFactor));
+    g = Math.min(255, Math.max(0, g * saturationFactor));
+    b = Math.min(255, Math.max(0, b * saturationFactor));
+
+    // Apply the modified values to the image data
+    data[i] = r;
+    data[i + 1] = g;
+    data[i + 2] = b;
+  }
+
+  // Apply the imageData back to the canvas
+  ctx.putImageData(imageData, 0, 0);
+
+  // Apply mild sharpening with a basic convolution filter
+  const sharpenKernel = [
+    [0, -0.25, 0],
+    [-0.25, 2, -0.25],
+    [0, -0.25, 0],
+  ];
+
+  const sharpenedImageData = ctx.getImageData(0, 0, width, height);
+  const sharpenedData = sharpenedImageData.data;
+  const widthPx = sharpenedImageData.width;
+  const heightPx = sharpenedImageData.height;
 
   for (let y = 1; y < heightPx - 1; y++) {
     for (let x = 1; x < widthPx - 1; x++) {
@@ -176,18 +201,18 @@ function applyEnhancement(ctx, width, height) {
         for (let kx = -1; kx <= 1; kx++) {
           const px = (y + ky) * widthPx + (x + kx);
           const weight = sharpenKernel[ky + 1][kx + 1];
-          r += data[px * 4] * weight;
-          g += data[px * 4 + 1] * weight;
-          b += data[px * 4 + 2] * weight;
+          r += sharpenedData[px * 4] * weight;
+          g += sharpenedData[px * 4 + 1] * weight;
+          b += sharpenedData[px * 4 + 2] * weight;
         }
       }
 
       const idx = (y * widthPx + x) * 4;
-      data[idx] = Math.min(255, Math.max(0, r));
-      data[idx + 1] = Math.min(255, Math.max(0, g));
-      data[idx + 2] = Math.min(255, Math.max(0, b));
+      sharpenedData[idx] = Math.min(255, Math.max(0, r));
+      sharpenedData[idx + 1] = Math.min(255, Math.max(0, g));
+      sharpenedData[idx + 2] = Math.min(255, Math.max(0, b));
     }
   }
 
-  ctx.putImageData(imageData, 0, 0);
+  ctx.putImageData(sharpenedImageData, 0, 0);
 }
