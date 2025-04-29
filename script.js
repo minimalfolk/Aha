@@ -69,8 +69,8 @@ resizeBtn.addEventListener("click", () => {
     const height = newHeight.value ? parseInt(newHeight.value) : img.height;
     const format = formatSelect.value;
     const targetKB = customSize.value ? parseInt(customSize.value) : parseInt(presetSize.value);
-    const targetBytes = targetKB * 1024;
-    const minBytes = targetBytes - 3 * 1024;
+    const targetBytes = targetKB * 1024; // Target size in bytes
+    const minBytes = targetBytes - 3 * 1024; // Allow a little margin (3KB less)
 
     canvas.width = width;
     canvas.height = height;
@@ -79,7 +79,8 @@ resizeBtn.addEventListener("click", () => {
 
     applyEnhancement(ctx, width, height); // Optional enhancement step
 
-    let blob = await compressCanvas(canvas, format, targetBytes, minBytes);
+    // Compress the image to the target size with lossy quality
+    let blob = await compressCanvas(canvas, format, targetKB, minBytes);
     const url = URL.createObjectURL(blob);
 
     resizedImage.src = url;
@@ -107,11 +108,15 @@ resizeBtn.addEventListener("click", () => {
 });
 
 async function compressCanvas(canvas, format, targetSize, minSize) {
+  const bufferKB = 2; // Buffer size in KB (2KB less than target)
+  let targetBytes = (targetSize - bufferKB) * 1024;
+  let minBytes = (minSize - bufferKB) * 1024;
+  
   let quality = 0.95;
   let blob = await getBlob(canvas, format, quality);
   let attempts = 0;
-  const maxBytes = targetSize;
-  const minBytes = minSize;
+
+  const maxBytes = targetBytes;
 
   // Start compression loop
   while (blob.size > maxBytes && quality > 0.05 && attempts < 20) {
@@ -135,7 +140,7 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
     return await compressCanvas(tempCanvas, format, targetSize, minSize);
   }
 
-  // Ensure the final size is within the acceptable range (target size or less)
+  // Ensure the final size is within the acceptable range (target size - buffer)
   if (blob.size > maxBytes) {
     return compressCanvas(canvas, format, targetSize, minSize); // Recursion if still too large
   }
