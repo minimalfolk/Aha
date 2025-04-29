@@ -106,22 +106,24 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
   let quality = 0.95;
   let blob = await getBlob(canvas, format, quality);
   let attempts = 0;
+  const targetBytes = targetSize * 1024;
+  const maxBytes = targetBytes + 2048; // Allow 2 KB above the target size
+  const minBytes = targetBytes - 2048; // Allow 2 KB below the target size
 
-  // Adjust the quality of the image until the blob is in the target size range
-  while ((blob.size > targetSize || blob.size < minSize) && quality > 0.05 && attempts < 20) {
-    if (blob.size > targetSize) {
-      quality -= 0.05; // Lower the quality if the image is too large
-    } else if (blob.size < minSize) {
-      quality += 0.01; // Increase the quality if the image is too small
-      if (quality > 1.0) break;
+  // Start compression loop
+  while ((blob.size > maxBytes || blob.size < minBytes) && quality > 0.05 && attempts < 20) {
+    if (blob.size > maxBytes) {
+      quality -= 0.05; // Reduce quality if too large
+    } else if (blob.size < minBytes) {
+      quality += 0.01; // Increase quality if too small
     }
     blob = await getBlob(canvas, format, quality);
     attempts++;
   }
 
-  if (blob.size > targetSize) {
-    // If the image is still too large, reduce the dimensions
-    const ratio = Math.sqrt(targetSize / blob.size);
+  // If still out of range, adjust dimensions
+  if (blob.size > maxBytes) {
+    const ratio = Math.sqrt(targetBytes / blob.size); // Reduce image dimensions proportionally
     const newWidth = Math.floor(canvas.width * ratio);
     const newHeight = Math.floor(canvas.height * ratio);
     const tempCanvas = document.createElement("canvas");
@@ -129,7 +131,7 @@ async function compressCanvas(canvas, format, targetSize, minSize) {
     tempCanvas.height = newHeight;
     const tempCtx = tempCanvas.getContext("2d");
     tempCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
-    return await compressCanvas(tempCanvas, format, targetSize, minSize); // Recurse with the smaller dimensions
+    return await compressCanvas(tempCanvas, format, targetSize, minSize); // Recurse if still too large
   }
 
   return blob;
