@@ -1,92 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Image Resizer</title>
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- For PDF conversion -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Compress and resize images online for free without losing quality. Optimize images for websites, government forms, blogs, and social media." />
+  <meta name="keywords" content="image compressor, resize image, reduce image size, compress JPG PNG GIF, online image resizer, image shrinker, photo optimizer, image resizer India" />
+  <meta name="robots" content="index, follow" />
+  <title>Resize Image Online Free - Compress JPG, PNG, GIF | ReducePic</title>
+
+  <!-- Open Graph Meta -->
+  <meta property="og:title" content="Free Online Image Compressor | ReducePic" />
+  <meta property="og:description" content="Instantly compress and resize JPG, PNG, GIF, BMP images online without losing quality. Perfect for social media and website uploads." />
+  <meta property="og:image" content="https://reducepic.in/image-compression-tool.jpg" />
+  <meta property="og:url" content="https://reducepic.in" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:title" content="Free Image Compressor | ReducePic" />
+  <meta name="twitter:description" content="Compress and resize image files online without compromising quality. Great for WhatsApp, Instagram, and web uploads." />
+  <meta name="twitter:image" content="https://reducepic.in/image-compression-tool.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <meta name="google-site-verification" content="tFSw_3krhCp7xBursD0kPYXo-twhTfaW73wMX2YPMKQ" />
+  <link rel="canonical" href="https://reducepic.in" />
+  <!-- Favicon -->
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/navigation.css" />
+    <link rel="stylesheet" href="styles/footer.css" />
+    <link rel="stylesheet" href="styles/imagetool.css" />
+    <link rel="stylesheet" href="styles/text.css" />
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WQTP5K3D');</script>
+<!-- End Google Tag Manager -->
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ReducePic – Online Image Compressor",
+    "url": "https://reducepic.in",
+    "applicationCategory": "Utility",
+    "operatingSystem": "All",
+    "description": "Free online image compressor to reduce photo file size without losing quality. Supports JPG, PNG, GIF & BMP for web, social, and mobile use.",
+    "screenshot": "https://reducepic.in/reduce-image-size-tool.jpg",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "INR"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "1500"
+    }
+  }
+  </script>
+  <!-- Breadcrumb Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://reducepic.in"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://reducepic.in/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Contact",
+      "item": "https://reducepic.in/contact"
+    }
+  ]
+}
+</script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How to reduce image size online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Upload your image, adjust compression level, and click 'Reduce Now' to get a smaller file size instantly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Will the image quality be affected?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. ReducePic uses intelligent compression to minimize file size while preserving image quality."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this tool really free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, the tool is 100% free with no sign-up or login required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does it work on mobile?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, it's fully responsive and works on all mobile devices and browsers."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1593298052484860" crossorigin="anonymous"></script>
 </head>
+
 <body>
- <section class="resize-image">
-  <h1>Advanced Image Resizer</h1>
-  <p>Drag and drop an image below to start.</p>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQTP5K3D"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  <header class="sticky-header">
+    <div class="logo" onclick="window.location.href='./'">ReducePic</div>
+    <button class="hamburger-menu" aria-label="Open navigation menu" onclick="toggleMenu()">☰</button>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="/blog">Blog</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </nav>
+  </header>
 
-  <!-- Drag and Drop Upload -->
-  <div class="upload-box" id="uploadBox" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
-    <p>Drag & Drop or Click to Upload Image</p>
-    <input type="file" id="imageInput" accept="image/*" hidden>
+  <main>
+    <section class="compress-image">
+  <h1>Resize Your Image</h1>
+
+  <!-- Upload Container -->
+  <div class="upload-container">
+    <div class="upload-box" id="uploadBox">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <h3>Drop your images here</h3>
+      <p>or <span>browse files</span></p>
+      <input type="file" id="imageInput" accept="image/*" multiple>
+    </div>
+    <div class="supported-formats">
+      <p>Supports: JPG, PNG, WebP | Max 50MB</p>
+    </div>
   </div>
 
-  <!-- Preview Original Image -->
-  <div id="originalPreview" class="preview-container" hidden>
-    <h3>Original Image</h3>
-    <img id="originalImage" alt="Original Image">
-    <p id="originalDetails"></p>
-  </div>
+  <!-- Error Message -->
+  <div id="errorMessage" class="error-message" hidden></div>
 
-  <!-- Resize Options -->
-  <div class="resize-options" hidden>
-    <h3>Resize Settings</h3>
+  <!-- Original Image Preview -->
+  <figure id="originalPreview" class="preview-container" style="display: none;">
+        <img id="originalImage" alt="Original image preview" loading="lazy" />
+        <figcaption id="originalDetails"></figcaption>
+  </figure>
 
-    <!-- Dimensions -->
-    <label for="newWidth">Width (px):</label>
-    <input type="number" id="newWidth" min="1">
-
-    <label for="newHeight">Height (px):</label>
-    <input type="number" id="newHeight" min="1">
-
-    <!-- DPI -->
-    <label for="newDPI">Change DPI:</label>
-    <input type="number" id="newDPI" min="1" max="1200" placeholder="Default is 72">
-
-    <!-- Format -->
-    <label for="formatSelect">Convert to:</label>
+  <!-- Compression Options -->
+  <div class="compression-options">
+    <label for="targetSize">Target Size (KB):</label>
+    <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size in KB" />
+    
+    <label for="formatSelect">Output Format:</label>
     <select id="formatSelect">
-      <option value="image/jpeg">JPEG/JPG</option>
-      <option value="image/png">PNG</option>
-      <option value="image/gif">GIF</option>
-      <option value="image/webp">WebP</option>
-      <option value="image/svg+xml">SVG</option>
-      <option value="image/bmp">BMP</option>
-      <option value="application/pdf">PDF</option>
+      <option value="jpg">JPG</option>
+      <option value="jpeg">JPEG</option>
+      <option value="png">PNG</option>
+      <option value="webp">WebP</option>
+      <option value="gif">GIF</option>
+      <option value="bmp">BMP</option>
     </select>
 
-    <!-- Preset Sizes -->
-    <label for="presetSize">Set Max File Size:</label>
-    <select id="presetSize">
-      <option value="">Choose</option>
-      <option value="50">50 KB</option>
-      <option value="100">100 KB</option>
-      <option value="150">150 KB</option>
-      <option value="200">200 KB</option>
-      <option value="300">300 KB</option>
-    </select>
-
-    <!-- Custom Size -->
-    <label for="customSize">Or enter custom size (KB):</label>
-    <input type="number" id="customSize" placeholder="e.g., 120">
-
-    <!-- Resize Button -->
-    <button id="resizeBtn" disabled>Resize Now</button>
+    <button id="compressBtn" disabled>Reduce Now</button>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading Indicator -->
   <div id="loadingIndicator" hidden>
-    <p>Processing Image...</p>
+    <p>Compressing your image...</p>
   </div>
 
-  <!-- After Resize Preview -->
-  <div id="resizedPreview" class="preview-container" hidden>
-    <h3>Resized Image</h3>
-    <img id="resizedImage" alt="Resized Image">
-    <p><strong>Previous Size:</strong> <span id="previousSize"></span></p>
-    <p><strong>New Size:</strong> <span id="newSize"></span></p>
-    <button id="downloadBtn">Download Resized Image</button>
-  </div>
- </section>
+  <!-- Compressed Images Preview -->
+  <figure id="compressedPreview" class="preview-container" style="display: none;">
+        <img id="compressedImage" alt="Compressed image preview" loading="lazy" />
+        <figcaption id="compressedDetails"></figcaption>
+        <button id="downloadBtn" disabled>Download Image</button>
+  </figure>
+    </section>
 
-  <script src="script.js"></script>
+    <section class="features">
+  <h2>Why Choose ReducePic?</h2>
+  <p>ReducePic is designed to simplify your image compression needs without compromising quality. Whether you're a student submitting online forms, a developer optimizing site performance, or a content creator sharing on social media, ReducePic adapts to your needs effortlessly.</p>
+  <ul>
+    <li><strong>Lossless Compression:</strong> Reduce image file sizes while preserving clarity and detail. Ideal for printing, web publishing, or portfolio sharing.</li>
+    <li><strong>Multiple Format Support:</strong> Compatible with JPG, JPEG, PNG, GIF, and BMP formats. No need for conversions before uploading.</li>
+    <li><strong>Free and Secure:</strong> Enjoy unlimited usage at zero cost. No login or registration required. Your files are never stored or shared.</li>
+    <li><strong>Cross-Platform Compatibility:</strong> Fully responsive interface optimized for desktops, tablets, and smartphones.</li>
+    <li><strong>AI-Powered Optimization:</strong> Our smart compression algorithm intelligently reduces file size while retaining visual integrity.</li>
+    <li><strong>Form & Web Ready:</strong> Perfect for uploading images to government portals, school applications, websites, blogs, and social media platforms like Instagram and WhatsApp.</li>
+  </ul>
+    </section>
+
+    <section class="faq">
+  <h2>Frequently Asked Questions (FAQs)</h2>
+  <details>
+    <summary>How can I reduce image size online for free?</summary>
+    <p>Simply upload your image using our tool, adjust the compression level slider, and click the "Reduce Now" button. Your optimized image will be ready for download in seconds—no registration required.</p>
+  </details>
+  <details>
+    <summary>Does ReducePic maintain image quality after compression?</summary>
+    <p>Yes. ReducePic uses smart algorithms that minimize file size while keeping your image visually unchanged to the naked eye. Whether it's for personal or professional use, quality is preserved.</p>
+  </details>
+  <details>
+    <summary>Is there a limit to how many images I can compress?</summary>
+    <p>No, there are no daily limits or restrictions. You can compress as many images as you need, for free, with no hidden fees or sign-up barriers.</p>
+  </details>
+  <details>
+    <summary>Can I use ReducePic on mobile devices?</summary>
+    <p>Absolutely. The tool is mobile-optimized and works seamlessly across all modern browsers and devices—be it Android, iOS, Windows, or macOS.</p>
+  </details>
+    </section>
+  </main>
+
+  <footer class="main-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col footer-about">
+        <div class="footer-logo">
+          <i class="fas fa-compress-alt" aria-hidden="true"></i>
+          <span>ReducePic</span>
+        </div>
+        <p>ReducePic is your go-to tool for fast, free, and high-quality image compression and resizing.</p>
+        <div class="social-links">
+          <a href="https://instagram.com/resizyindia" target="_blank" rel="noopener" aria-label="ReducePic on Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://github.com/reducepic" target="_blank" rel="noopener" aria-label="ReducePic on GitHub"><i class="fab fa-github"></i></a>
+          <a href="https://www.linkedin.com/company/reducepic" target="_blank" rel="noopener" aria-label="ReducePic on LinkedIn"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Tools</h3>
+        <ul>
+          <li><a href="/">Reduce Any Image</a></li>
+          <li><a href="./resize-to-20kb">Resize to 20Kb</a></li>
+          <li><a href="#formats">Supported Formats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="./blog">Blog & Guides</a></li>
+          <li><a href="#tutorials">How-To Tutorials</a></li>
+          <li><a href="#faq">FAQs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="./about">About Us</a></li>
+          <li><a href="./contact">Contact</a></li>
+          <li><a href="./sitemap">Sitemap</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="./privacy">Privacy Policy</a></li>
+          <li><a href="./terms">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; <span id="currentYear"></span> ReducePic - Made In India🇮🇳</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("currentYear").textContent = new Date().getFullYear();
+</script>
+
+  <script src="script/main.js" defer></script>
+  <script src="script/nav.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
