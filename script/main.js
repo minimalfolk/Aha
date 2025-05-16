@@ -127,37 +127,60 @@ document.addEventListener('DOMContentLoaded', () => {
     width = Math.round(width * scale);
     height = Math.round(height * scale);
 
-    let quality = 0.9;
-    let blob = null;
+    let qualityMin = 0.3;
+    let qualityMax = 0.95;
+    let quality = qualityMax;
 
-    for (let attempt = 0; attempt < 10; attempt++) {
+    let blob = null;
+    let lastGoodBlob = null;
+    let lastGoodDims = { width, height };
+
+    // Phase 1: Binary search quality
+    for (let i = 0; i < 12; i++) {
       canvas.width = width;
       canvas.height = height;
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
       blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`, quality));
+      if (!blob) throw new Error('Compression failed.');
 
-      if (!blob) throw new Error('Failed to compress image.');
-
-      const sizeDiff = blob.size - targetBytes;
-
-      if (Math.abs(sizeDiff) < 5000) break;
-
-      if (sizeDiff > 0) {
-        quality *= 0.85;
-        width *= 0.9;
-        height *= 0.9;
+      if (blob.size <= targetBytes) {
+        lastGoodBlob = blob;
+        lastGoodDims = { width, height };
+        if (targetBytes - blob.size < 1024) break;
+        qualityMin = quality;
+        quality = (quality + qualityMax) / 2;
       } else {
-        quality = Math.min(quality * 1.05, 0.95);
+        qualityMax = quality;
+        quality = (quality + qualityMin) / 2;
       }
-
-      width = Math.round(width);
-      height = Math.round(height);
     }
 
-    const url = URL.createObjectURL(blob);
-    return { blob, url, dimensions: { width, height } };
+    // Phase 2: Slightly reduce dimensions if quality wasn't enough
+    while (!lastGoodBlob && width > 100 && height > 100) {
+      width = Math.round(width * 0.95);
+      height = Math.round(height * 0.95);
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+
+      blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`, 0.85));
+      if (!blob) throw new Error('Failed to compress further.');
+
+      if (blob.size <= targetBytes) {
+        lastGoodBlob = blob;
+        lastGoodDims = { width, height };
+        break;
+      }
+    }
+
+    if (!lastGoodBlob) throw new Error('Could not meet target size without degrading too much.');
+
+    const url = URL.createObjectURL(lastGoodBlob);
+    return { blob: lastGoodBlob, url, dimensions: lastGoodDims };
   }
 
   function calculateReduction(originalSize, newSize) {
