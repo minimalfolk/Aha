@@ -1,5 +1,3 @@
-// main.js - Compress and Resize Images to Target Size with Enhanced UX and Error Handling
-
 document.addEventListener('DOMContentLoaded', () => {
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
@@ -49,9 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const image of images) {
       try {
-        const compressedBlob = await compressImageToTarget(image, targetSizeKB * 1024, format);
-        const url = URL.createObjectURL(compressedBlob);
-        results.push({ blob: compressedBlob, url });
+        const { blob, url, dimensions } = await compressImageToTarget(image, targetSizeKB * 1024, format);
+        results.push({ blob, url, dimensions, original: image });
       } catch (err) {
         errorMessage.textContent = `Error processing ${image.name}: ${err.message}`;
         errorMessage.hidden = false;
@@ -59,16 +56,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (results.length > 0) {
-      compressedImage.src = results[0].url;
-      compressedDetails.textContent = `${Math.round(results[0].blob.size / 1024)} KB - ${format.toUpperCase()}`;
+      const first = results[0];
+      compressedImage.src = first.url;
+      compressedDetails.innerHTML = `
+        <p><strong>New Size:</strong> ${(first.blob.size / 1024).toFixed(1)} KB</p>
+        <p><strong>Format:</strong> ${format.toUpperCase()}</p>
+        <p><strong>Dimensions:</strong> ${first.dimensions.width} × ${first.dimensions.height} px</p>
+        <p><strong>Reduction:</strong> ${calculateReduction(first.original.size, first.blob.size)}%</p>
+      `;
       compressedPreview.style.display = 'block';
       downloadBtn.disabled = false;
 
       downloadBtn.onclick = () => {
-        results.forEach(({ blob }, idx) => {
+        results.forEach(({ blob, original }, idx) => {
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
-          a.download = `compressed_${idx + 1}.${format}`;
+          a.download = `compressed_${idx + 1}_${original.name.replace(/\.[^/.]+$/, '')}.${format}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -83,9 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function displayOriginalImage(file) {
     const url = URL.createObjectURL(file);
-    originalImage.src = url;
-    originalDetails.textContent = `${file.name} - ${(file.size / 1024).toFixed(1)} KB`;
-    originalPreview.style.display = 'block';
+    const img = new Image();
+    img.onload = () => {
+      originalImage.src = url;
+      originalDetails.innerHTML = `
+        <p><strong>Name:</strong> ${file.name}</p>
+        <p><strong>Type:</strong> ${file.type}</p>
+        <p><strong>Size:</strong> ${(file.size / 1024).toFixed(1)} KB</p>
+        <p><strong>Dimensions:</strong> ${img.width} × ${img.height} px</p>
+      `;
+      originalPreview.style.display = 'block';
+    };
+    img.src = url;
   }
 
   function loadImage(file) {
@@ -104,13 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function compressImageToTarget(file, targetBytes, format) {
     const img = await loadImage(file);
-
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    let quality = 0.9;
+    const MAX_DIMENSION = 2000;
     let width = img.width;
     let height = img.height;
+
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+
+    let quality = 0.9;
     let blob = null;
 
     for (let attempt = 0; attempt < 10; attempt++) {
@@ -133,14 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
         height *= 0.9;
       } else {
         quality = Math.min(quality * 1.05, 0.95);
-        width *= 1.05;
-        height *= 1.05;
       }
 
       width = Math.round(width);
       height = Math.round(height);
     }
 
-    return blob;
+    const url = URL.createObjectURL(blob);
+    return { blob, url, dimensions: { width, height } };
+  }
+
+  function calculateReduction(originalSize, newSize) {
+    return Math.round((1 - newSize / originalSize) * 100);
   }
 });
