@@ -73,8 +73,8 @@
 
   <!-- Original Image Preview -->
   <figure id="originalPreview" class="preview-container" style="display: none;">
-        <img id="originalImage" alt="Original image preview" loading="lazy" />
-        <figcaption id="originalDetails"></figcaption>
+    <img id="originalImage" alt="Original image preview" loading="lazy" />
+    <figcaption id="originalDetails"></figcaption>
   </figure>
 
   <!-- Compression Options -->
@@ -84,18 +84,86 @@
     <button id="compressBtn" disabled>Reduce Now</button>
   </div>
 
+  <!-- Support Message -->
+  <div id="supportMessage" class="support-message" style="display: none;">
+    <p>This free service is supported by ads. Thank you for helping us stay free!</p>
+  </div>
+
+  <!-- Ad Block -->
+  <div id="adBlock" class="ad-block" style="display: none;">
+    <p>[Ad Placeholder - your ad script here]</p>
+  </div>
+
   <!-- Loading Indicator -->
-  <div id="loadingIndicator" hidden>
+  <div id="loadingIndicator" style="display: none;">
     <p>Compressing your image...</p>
   </div>
 
   <!-- Compressed Images Preview -->
   <figure id="compressedPreview" class="preview-container" style="display: none;">
-        <img id="compressedImage" alt="Compressed image preview" loading="lazy" />
-        <figcaption id="compressedDetails"></figcaption>
-        <button id="downloadBtn" disabled>Download Image</button>
+    <img id="compressedImage" alt="Compressed image preview" loading="lazy" />
+    <figcaption id="compressedDetails">Your image is ready!</figcaption>
+    <button id="downloadBtn" disabled>Download Image</button>
   </figure>
-    </section>
+</section>
+
+<!-- STYLES FOR VISIBILITY -->
+<style>
+  .support-message {
+    text-align: center;
+    background: #fff4e5;
+    border: 1px solid #ffd591;
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    color: #8c6d1f;
+  }
+  .ad-block {
+    text-align: center;
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    color: #333;
+    font-size: 1em;
+    border: 1px solid #ccc;
+  }
+</style>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+  const compressBtn = document.getElementById("compressBtn");
+  const loading = document.getElementById("loadingIndicator");
+  const adBlock = document.getElementById("adBlock");
+  const supportMessage = document.getElementById("supportMessage");
+  const compressedPreview = document.getElementById("compressedPreview");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const imageInput = document.getElementById("imageInput");
+
+  // Enable compress button when file is selected
+  imageInput.addEventListener("change", () => {
+    if (imageInput.files.length > 0) {
+      compressBtn.disabled = false;
+    }
+  });
+
+  compressBtn.addEventListener("click", () => {
+    supportMessage.style.display = "block";
+    loading.style.display = "block";
+
+    setTimeout(() => {
+      loading.style.display = "none";
+      adBlock.style.display = "block";
+
+      setTimeout(() => {
+        compressedPreview.style.display = "block";
+        downloadBtn.disabled = false;
+        document.getElementById("compressedImage").src = "demo.jpg"; // Replace with actual compressed image src
+      }, 1500);
+    }, 2000);
+  });
+</script>
 
     <section class="features">
   <h2>Why Choose ReducePic?</h2>
