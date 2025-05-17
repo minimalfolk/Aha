@@ -107,64 +107,6 @@
   </figure>
 </section>
 
-<!-- STYLES FOR VISIBILITY -->
-<style>
-  .support-message {
-    text-align: center;
-    background: #fff4e5;
-    border: 1px solid #ffd591;
-    padding: 12px;
-    margin-top: 20px;
-    border-radius: 8px;
-    font-size: 0.95em;
-    color: #8c6d1f;
-  }
-  .ad-block {
-    text-align: center;
-    background: #f1f1f1;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 20px 0;
-    color: #333;
-    font-size: 1em;
-    border: 1px solid #ccc;
-  }
-</style>
-
-<!-- JAVASCRIPT LOGIC -->
-<script>
-  const compressBtn = document.getElementById("compressBtn");
-  const loading = document.getElementById("loadingIndicator");
-  const adBlock = document.getElementById("adBlock");
-  const supportMessage = document.getElementById("supportMessage");
-  const compressedPreview = document.getElementById("compressedPreview");
-  const downloadBtn = document.getElementById("downloadBtn");
-  const imageInput = document.getElementById("imageInput");
-
-  // Enable compress button when file is selected
-  imageInput.addEventListener("change", () => {
-    if (imageInput.files.length > 0) {
-      compressBtn.disabled = false;
-    }
-  });
-
-  compressBtn.addEventListener("click", () => {
-    supportMessage.style.display = "block";
-    loading.style.display = "block";
-
-    setTimeout(() => {
-      loading.style.display = "none";
-      adBlock.style.display = "block";
-
-      setTimeout(() => {
-        compressedPreview.style.display = "block";
-        downloadBtn.disabled = false;
-        document.getElementById("compressedImage").src = "demo.jpg"; // Replace with actual compressed image src
-      }, 1500);
-    }, 2000);
-  });
-</script>
-
     <section class="features">
   <h2>Why Choose ReducePic?</h2>
   <p>ReducePic is designed to simplify your image compression needs without compromising quality. Whether you're a student submitting online forms, a developer optimizing site performance, or a content creator sharing on social media, ReducePic adapts to your needs effortlessly.</p>
