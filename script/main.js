@@ -62,93 +62,97 @@ document.addEventListener('DOMContentLoaded', function() {
     
     compressBtn.disabled = false;
   }
+
+  // ... (previous code remains the same until createOriginalPreview function)
   
-  // Create original preview
+  // Create original preview item
   function createOriginalPreview(img, file, index) {
+    const previewContent = document.getElementById('originalPreviewContent');
+    const previewCount = document.querySelector('#originalPreview .preview-count');
+    
     const item = document.createElement('div');
-    item.className = 'original-image-item fade-in';
+    item.className = 'preview-item fade-in';
     
     const imgElement = document.createElement('img');
+    imgElement.className = 'preview-image';
     imgElement.src = img.src;
     imgElement.alt = `Original image ${index + 1}`;
     
     const details = document.createElement('div');
-    details.className = 'original-image-details';
+    details.className = 'preview-details';
     details.innerHTML = `
-      <p>${file.name}</p>
-      <p>${(file.size / 1024).toFixed(2)} KB</p>
-      <p>${img.width} × ${img.height} px</p>
+      <div class="detail-group">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value">${file.name}</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Size:</span>
+        <span class="detail-value">${(file.size / 1024).toFixed(2)} KB</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Dimensions:</span>
+        <span class="detail-value">${img.width} × ${img.height} px</span>
+      </div>
     `;
     
     item.appendChild(imgElement);
     item.appendChild(details);
-    originalImagesGrid.appendChild(item);
+    previewContent.appendChild(item);
+    
+    // Update count
+    previewCount.textContent = `${previewContent.children.length} images`;
+    document.getElementById('originalPreview').style.display = 'block';
   }
   
-  // Compress button click
-  compressBtn.addEventListener('click', async function() {
-    if (uploadedFiles.length === 0) return;
-    
-    loadingIndicator.style.display = 'block';
-    compressedImagesGrid.innerHTML = '';
-    compressedImagesGrid.style.display = 'none';
-    
-    // Simulate compression (in a real app, you'd use actual compression)
-    setTimeout(() => {
-      loadingIndicator.style.display = 'none';
-      compressedImagesGrid.style.display = 'grid';
-      
-      uploadedFiles.forEach((file, index) => {
-        createCompressedPreview(file, index);
-      });
-    }, 1500);
-  });
-  
-  // Create compressed preview
+  // Create compressed preview item
   function createCompressedPreview(file, index) {
+    const previewContent = document.getElementById('compressedPreviewContent');
+    const previewCount = document.querySelector('#compressedPreview .preview-count');
+    
     const item = document.createElement('div');
-    item.className = 'compressed-image-item fade-in';
+    item.className = 'preview-item fade-in';
     
     const imgElement = document.createElement('img');
+    imgElement.className = 'preview-image';
     imgElement.src = URL.createObjectURL(file);
     imgElement.alt = `Compressed image ${index + 1}`;
     
-    const details = document.createElement('div');
-    details.className = 'compressed-image-details';
-    
-    // Simulate compressed size (50% of original in this example)
     const compressedSize = parseInt(targetSize.value) || Math.max(10, Math.floor(file.size / 1024 / 2));
+    const reductionPercent = Math.floor((compressedSize * 1024 / file.size) * 100);
+    
+    const details = document.createElement('div');
+    details.className = 'preview-details';
     details.innerHTML = `
-      <p>${file.name}</p>
-      <p>${compressedSize} KB (${Math.floor((compressedSize * 1024 / file.size) * 100)}% smaller)</p>
+      <div class="detail-group">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value">${file.name}</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Original:</span>
+        <span class="detail-value">${(file.size / 1024).toFixed(2)} KB</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Compressed:</span>
+        <span class="detail-value">${compressedSize} KB (${reductionPercent}% smaller)</span>
+      </div>
     `;
     
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
-    downloadBtn.textContent = 'Download';
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
     downloadBtn.addEventListener('click', () => {
       downloadImage(imgElement.src, file.name);
     });
     
+    details.appendChild(downloadBtn);
     item.appendChild(imgElement);
     item.appendChild(details);
-    item.appendChild(downloadBtn);
-    compressedImagesGrid.appendChild(item);
+    previewContent.appendChild(item);
+    
+    // Update count
+    previewCount.textContent = `${previewContent.children.length} images`;
+    document.getElementById('compressedPreview').style.display = 'block';
   }
   
-  // Download image
-  function downloadImage(src, filename) {
-    const link = document.createElement('a');
-    link.href = src;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  // ... (rest of the JavaScript remains the same)
 });
-
-// Navigation toggle for mobile
-function toggleMenu() {
-  const navLinks = document.querySelector('.nav-links');
-  navLinks.classList.toggle('active');
-}
