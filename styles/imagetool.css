@@ -102,35 +102,37 @@ button {
   box-shadow: none;
 }
 
-/* Base Styles */
+/* Image Compressor Specific Styles */
 .compress-image {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
-  font-size: 13px;
-  color: #333;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
-h1 {
-  font-size: 18px;
+.compress-image h1 {
+  font-size: 1.5rem;
   text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
 }
 
 /* Upload Container */
 .upload-container {
-  border: 2px dashed #bdc3c7;
-  border-radius: 8px;
-  padding: 20px;
+  border: 2px dashed var(--light-gray);
+  border-radius: var(--border-radius);
+  padding: 2rem;
   text-align: center;
-  margin-bottom: 20px;
-  transition: all 0.3s;
+  margin-bottom: 1.5rem;
+  transition: var(--transition);
+  background-color: var(--light-color);
 }
 
 .upload-container:hover {
-  border-color: #3498db;
+  border-color: var(--accent-color);
+  background-color: rgba(72, 149, 239, 0.05);
 }
 
 .upload-box {
@@ -139,24 +141,25 @@ h1 {
 }
 
 .upload-box i {
-  font-size: 40px;
-  color: #3498db;
-  margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  margin-bottom: 0.75rem;
 }
 
 .upload-box h3 {
-  font-size: 14px;
-  margin: 5px 0;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  color: var(--dark-color);
 }
 
 .upload-box p {
-  font-size: 12px;
-  color: #7f8c8d;
+  font-size: 0.875rem;
+  color: var(--gray-color);
 }
 
 .upload-box p span {
-  color: #3498db;
-  font-weight: bold;
+  color: var(--accent-color);
+  font-weight: 600;
 }
 
 #imageInput {
@@ -170,149 +173,172 @@ h1 {
 }
 
 .supported-formats {
-  font-size: 11px;
-  color: #95a5a6;
-  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--gray-color);
+  margin-top: 1rem;
 }
 
-/* Preview Containers */
-.preview-container {
-  border: 1px solid #ecf0f1;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.preview-container img {
-  max-width: 100%;
-  max-height: 300px;
-  display: block;
-  margin: 0 auto 10px;
-  border: 1px solid #eee;
-}
-
-.preview-container figcaption {
-  font-size: 12px;
-  color: #7f8c8d;
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-/* Compression Options */
+/* Compression Options - Vertical Layout */
 .compression-options {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.compression-controls {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .compression-options label {
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dark-color);
 }
 
 .compression-options input {
-  padding: 8px 10px;
-  border: 1px solid #bdc3c7;
-  border-radius: 4px;
-  width: 100px;
-  font-size: 12px;
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
 }
 
 #compressBtn {
-  background-color: #3498db;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.3s;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  width: 100%;
+  transition: var(--transition);
 }
 
 #compressBtn:hover {
-  background-color: #2980b9;
+  background-color: var(--primary-dark);
 }
 
 #compressBtn:disabled {
-  background-color: #95a5a6;
+  background-color: var(--gray-color);
   cursor: not-allowed;
 }
 
-/* Download Button */
+/* Image Previews - Stacked Layout */
+.image-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preview-container {
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  background-color: var(--light-color);
+}
+
+.preview-image {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.preview-image img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: var(--border-radius);
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.image-details {
+  font-size: 0.875rem;
+  color: var(--gray-color);
+  line-height: 1.5;
+}
+
+.image-details strong {
+  color: var(--dark-color);
+}
+
 #downloadBtn {
-  background-color: #2ecc71;
+  background-color: var(--success-color);
   color: white;
   border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.3s;
-  margin-top: 10px;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  width: 100%;
+  margin-top: 1rem;
+  transition: var(--transition);
 }
 
 #downloadBtn:hover {
-  background-color: #27ae60;
+  background-color: #3a9a32;
 }
 
 #downloadBtn:disabled {
-  background-color: #95a5a6;
+  background-color: var(--gray-color);
   cursor: not-allowed;
 }
 
-/* Support Message & Ad Block */
+/* Support & Ad Blocks */
 .support-message {
-  font-size: 11px;
-  color: #7f8c8d;
+  font-size: 0.75rem;
+  color: var(--gray-color);
   text-align: center;
-  margin: 15px 0;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
+  margin: 1.5rem 0;
+  padding: 0.75rem;
+  background-color: var(--light-color);
+  border-radius: var(--border-radius);
 }
 
 .ad-block {
-  background-color: #f8f9fa;
-  border: 1px solid #ecf0f1;
-  border-radius: 6px;
-  padding: 20px;
+  background-color: var(--light-color);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
   text-align: center;
-  margin: 20px 0;
+  margin: 1.5rem 0;
   min-height: 100px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 .ad-block p {
-  font-size: 11px;
-  color: #95a5a6;
-  margin: 0;
+  font-size: 0.75rem;
+  color: var(--gray-color);
+  margin-top: 0.5rem;
 }
 
 /* Loading Indicator */
 #loadingIndicator {
   text-align: center;
-  font-size: 12px;
-  color: #3498db;
-  margin: 20px 0;
+  font-size: 0.875rem;
+  color: var(--accent-color);
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 480px) {
-  .compression-options {
+  .compress-image {
+    padding: 1rem;
+  }
+  
+  .compression-controls {
     flex-direction: column;
-    align-items: flex-start;
   }
   
-  .compression-options input {
-    width: 100%;
-  }
-  
-  #compressBtn {
-    width: 100%;
+  .preview-image {
+    flex-direction: column;
   }
 }
