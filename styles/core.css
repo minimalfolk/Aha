@@ -1,0 +1,174 @@
+/* Core Reset and Typography */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Upload Container */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 30px auto;
+}
+
+.upload-box {
+  border: 2px dashed #aaa;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.upload-box:hover {
+  background-color: #f0f0f0;
+}
+
+.upload-box i {
+  font-size: 32px;
+  color: #666;
+}
+
+.upload-box h3 {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.upload-box input[type="file"] {
+  display: none;
+}
+
+.supported-formats {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Resizer Input Section */
+#resizer-input {
+  margin: 30px auto;
+  text-align: center;
+}
+
+#resizer-input label {
+  font-weight: 500;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+#target-size {
+  padding: 8px 12px;
+  width: 100px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
+#process-btn {
+  padding: 10px 20px;
+  background-color: #2b7cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#process-btn:hover {
+  background-color: #1f5fc1;
+}
+
+/* Preview Section */
+#preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+#preview-container img {
+  max-width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 5px;
+  background-color: #fff;
+}
+
+/* Download Button */
+#download-all-container {
+  text-align: center;
+  margin: 30px auto;
+}
+
+#downloadAllBtn {
+  padding: 12px 25px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#downloadAllBtn:hover {
+  background-color: #218838;
+}
+
+/* Tool Links */
+.tool-links {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.tool-links p {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.tool-links a {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #2b7cff;
+  background-color: #eaf1ff;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.tool-links a:hover {
+  background-color: #d4e5ff;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .upload-box {
+    padding: 20px;
+  }
+
+  #target-size {
+    width: 80px;
+  }
+
+  #preview-container img {
+    max-width: 100%;
+  }
+}
