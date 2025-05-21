@@ -253,25 +253,20 @@
     <button id="compressBtn" disabled>Compress</button>
  </div>
   
-  <!-- Original Image Preview -->
-  <figure id="originalPreview" class="preview-container" style="display: none;">
-        <img id="originalImage" alt="Original image preview" loading="lazy" />
-        <figcaption id="originalDetails"></figcaption>
-  </figure> 
-    
-    
+  <!-- Original Images Preview -->
+<section id="originalPreviewSection" class="preview-multi-container" style="display: none;">
+  <h3>Original Images</h3>
+  <div id="originalPreviewList" class="preview-list"></div>
+</section>
+<!-- Loading Indicator -->
+<div id="loadingIndicator" hidden>
+  <p>Compressing your images...</p>
+</div>
 
-  <!-- Loading Indicator -->
-  <div id="loadingIndicator" hidden>
-    <p>Compressing your image...</p>
-  </div>
-
-  <!-- Compressed Images Preview -->
-  <figure id="compressedPreview" class="preview-container" style="display: none;">
-        <img id="compressedImage" alt="Compressed image preview" loading="lazy" />
-        <figcaption id="compressedDetails"></figcaption>
-        <button id="downloadBtn" disabled>Download</button>
-  </figure>
+<!-- Compressed Images Preview -->
+<section <id="compressedPreviewSection" class="preview-multi-container" style="display: none;">
+  <h3>Compressed Images</h3>
+  <div id="compressedPreviewList" class="preview-list"></div>
 </section>
 
     <section class="seo-copy">
