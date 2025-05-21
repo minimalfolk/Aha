@@ -1,129 +1,131 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
-const previewContainer = document.getElementById("preview-container");
-const downloadAllContainer = document.getElementById("download-all-container");
-const uploadInput = document.getElementById("imageUpload");
-const processBtn = document.getElementById("process-btn");
-const targetSizeInput = document.getElementById("target-size");
-const downloadAllBtn = document.getElementById("downloadAllBtn");
+const imageInput = document.getElementById('imageInput');
+const processBtn = document.getElementById('process-btn');
+const previewContainer = document.getElementById('preview-container');
+const downloadAllBtn = document.getElementById('downloadAllBtn');
+const downloadAllContainer = document.getElementById('download-all-container');
+let processedImages = [];
 
-let imageDataList = [];
+imageInput.addEventListener('change', handleImageUpload);
+processBtn.addEventListener('click', processImages);
+downloadAllBtn.addEventListener('click', downloadAllAsZip);
 
-uploadInput.addEventListener("change", function (event) {
-  const files = Array.from(event.target.files);
-  previewContainer.innerHTML = "";
-  imageDataList = [];
+function handleImageUpload() {
+  previewContainer.innerHTML = '';
+  processedImages = [];
+  const files = imageInput.files;
 
-  files.forEach((file, index) => {
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = function () {
+        previewContainer.appendChild(createPreview(img.src, 'Pending...'));
+      };
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function processImages() {
+  const targetSizeKB = parseInt(document.getElementById('target-size').value);
+  if (!targetSizeKB || targetSizeKB <= 0) return alert("Enter a valid target size.");
+
+  const files = imageInput.files;
+  if (!files.length) return alert("Please upload images first.");
+
+  previewContainer.innerHTML = '';
+  processedImages = [];
+
+  Array.from(files).forEach((file, index) => {
     const reader = new FileReader();
     reader.onload = function (e) {
       const img = new Image();
       img.src = e.target.result;
 
-      img.onload = function () {
-        const width = img.width;
-        const height = img.height;
-        const originalSize = (file.size / 1024).toFixed(2);
-        const format = file.name.split(".").pop().toUpperCase();
+      img.onload = async function () {
+        const compressedBlob = await compressImage(img, targetSizeKB * 1024);
+        const compressedURL = URL.createObjectURL(compressedBlob);
+        processedImages.push({ name: `image${index + 1}.jpg`, blob: compressedBlob });
 
-        imageDataList.push({
-          index,
-          name: file.name,
-          format,
-          width,
-          height,
-          originalSize,
-          file,
-          dataURL: e.target.result,
-          compressedBlob: null
-        });
+        previewContainer.appendChild(createPreview(compressedURL, `${(compressedBlob.size / 1024).toFixed(1)} KB`));
 
-        const imageHTML = `
-          <div class="image-preview" id="preview-${index}">
-            <div class="image-thumbnail">
-              <img src="${e.target.result}" alt="${file.name}" />
-            </div>
-            <div class="image-details">
-              <p><strong>Name:</strong> ${file.name}</p>
-              <p><strong>Format:</strong> ${format}</p>
-              <p><strong>Dimensions:</strong> ${width}x${height}</p>
-            </div>
-            <div class="image-sizes">
-              <p><strong>Size:</strong> ${originalSize} KB → <span id="compressed-${index}">Pending</span> KB</p>
-              <a id="download-${index}" class="download-btn" style="display:none;">Download</a>
-            </div>
-          </div>
-        `;
-        previewContainer.insertAdjacentHTML("beforeend", imageHTML);
-
-        if (imageDataList.length === files.length) {
-          downloadAllContainer.style.display = "block";
+        if (processedImages.length === files.length) {
+          downloadAllContainer.style.display = 'block';
         }
       };
     };
     reader.readAsDataURL(file);
   });
-});
+}
 
-processBtn.addEventListener("click", async () => {
-  const targetKB = parseInt(targetSizeInput.value);
-  if (!targetKB || targetKB <= 0) {
-    alert("Please enter a valid target size in KB.");
-    return;
-  }
+function compressImage(img, targetBytes) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    let quality = 0.92;
+    let width = img.width;
+    let height = img.height;
+    const scaleFactor = 0.95; // Decrease factor each iteration
 
-  const zip = new JSZip();
-  for (const data of imageDataList) {
-    const img = new Image();
-    img.src = data.dataURL;
-    await new Promise(resolve => {
-      img.onload = async () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-        let quality = 0.9;
-        let blob;
+    const tryCompress = () => {
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
 
-        while (true) {
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.clearRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
-
-          blob = await new Promise(res => canvas.toBlob(res, data.file.type, quality));
-          const sizeKB = blob.size / 1024;
-
-          if (sizeKB <= targetKB || (quality < 0.4 && width < 200)) break;
-
-          quality -= 0.1;
-          if (quality < 0.5) {
-            width *= 0.9;
-            height *= 0.9;
-          }
+      canvas.toBlob(blob => {
+        if (blob.size <= targetBytes || quality < 0.5 || width < 50 || height < 50) {
+          resolve(blob);
+        } else {
+          quality -= 0.05;
+          width *= scaleFactor;
+          height *= scaleFactor;
+          tryCompress();
         }
+      }, 'image/jpeg', quality);
+    };
 
-        const newName = data.name.replace(/\.[^/.]+$/, '') + `_${targetKB}KB.${data.format.toLowerCase()}`;
-        const url = URL.createObjectURL(blob);
+    tryCompress();
+  });
+}
 
-        document.getElementById(`compressed-${data.index}`).innerText = `${(blob.size / 1024).toFixed(1)}`;
-        const downloadBtn = document.getElementById(`download-${data.index}`);
-        downloadBtn.href = url;
-        downloadBtn.download = newName;
-        downloadBtn.style.display = "inline-block";
-        downloadBtn.innerText = "Download";
+function createPreview(src, label) {
+  const wrapper = document.createElement('div');
+  wrapper.style.margin = '10px';
+  wrapper.style.textAlign = 'center';
 
-        zip.file(newName, blob);
-        resolve();
-      };
-    });
-  }
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.maxWidth = '180px';
+  img.style.maxHeight = '180px';
+  img.style.display = 'block';
+  img.style.margin = 'auto';
+  img.style.borderRadius = '8px';
 
-  downloadAllBtn.onclick = () => {
-    zip.generateAsync({ type: "blob" }).then(content => {
-      saveAs(content, "resized_images.zip");
-    });
-  };
-});
+  const info = document.createElement('p');
+  info.textContent = label;
+  info.style.fontSize = '14px';
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(info);
+  return wrapper;
+}
+
+function downloadAllAsZip() {
+  const zip = new JSZip();
+  processedImages.forEach(img => {
+    zip.file(img.name, img.blob);
+  });
+
+  zip.generateAsync({ type: "blob" }).then(content => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = "compressed_images.zip";
+    a.click();
+  });
+}
 </script>
