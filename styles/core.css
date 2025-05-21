@@ -1,155 +1,232 @@
-<style>
-/* General Reset */
-body {
+/* Core Reset and Base */
+* {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f9f9f9;
-  color: #333;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Upload Container */
-.upload-container {
-  max-width: 600px;
-  margin: 40px auto 20px;
-  padding: 20px;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fb;
+  color: #333;
+  line-height: 1.6;
+  padding-bottom: 50px;
+}
+
+/* Header Styles */
+.sticky-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #0d6efd;
+}
+
+.hamburger-menu {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+}
+
+.nav-links a {
+  margin: 0 1rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: #0d6efd;
+}
+
+/* Main Tool Section */
+main {
+  padding: 2rem;
   text-align: center;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.resize-image h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tool-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tool-links a {
+  background-color: #e7f1ff;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+.tool-links a:hover {
+  background-color: #cfe4ff;
+}
+
+/* Upload Section */
+.upload-container {
+  margin: 2rem auto;
+  text-align: center;
 }
 
 .upload-box {
-  padding: 30px;
+  padding: 2rem;
   border: 2px dashed #ccc;
   border-radius: 10px;
+  background-color: #fff;
   cursor: pointer;
   transition: border-color 0.3s;
-  position: relative;
 }
 
 .upload-box:hover {
-  border-color: #007BFF;
+  border-color: #0d6efd;
 }
 
 .upload-box i {
-  font-size: 32px;
-  color: #007BFF;
-}
-
-.upload-box h3 {
-  margin-top: 12px;
-  font-size: 18px;
-  color: #555;
-}
-
-.upload-box input[type="file"] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+  font-size: 2rem;
+  color: #0d6efd;
+  margin-bottom: 1rem;
 }
 
 .supported-formats {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #777;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
 }
 
-/* Compression Options */
 #resizer-input {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
-  background: #fff;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem;
 }
 
-#resizer-input label {
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-#target-size {
-  width: 100px;
-  padding: 6px;
-  border-radius: 6px;
+#resizer-input input {
+  padding: 0.5rem;
+  width: 200px;
+  margin-bottom: 1rem;
   border: 1px solid #ccc;
-  margin-right: 10px;
+  border-radius: 5px;
 }
 
 #process-btn {
-  padding: 8px 16px;
-  background-color: #007BFF;
-  border: none;
+  background-color: #0d6efd;
   color: white;
-  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 #process-btn:hover {
-  background-color: #0056b3;
+  background-color: #0b5ed7;
 }
 
-/* Preview Container */
+#ads-space {
+  margin: 2rem auto;
+  text-align: center;
+  background: #f1f3f5;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
 #preview-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 1rem;
   justify-content: center;
-  gap: 16px;
-  margin: 30px auto;
-  max-width: 1100px;
-  padding: 0 10px;
-}
-
-#preview-container div {
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  text-align: center;
-  width: 180px;
-}
-
-#preview-container img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
-
-/* Download All Button */
-#download-all-container {
-  margin: 20px auto 40px;
-  text-align: center;
+  margin-top: 2rem;
 }
 
 #downloadAllBtn {
-  padding: 10px 20px;
-  background-color: #28a745;
-  border: none;
+  background-color: #198754;
   color: white;
-  border-radius: 6px;
-  font-size: 16px;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 #downloadAllBtn:hover {
-  background-color: #1e7e34;
+  background-color: #157347;
 }
 
-/* Ads Section */
-#ads-space {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 15px;
-  text-align: center;
+/* SEO Content and Features */
+.seo-copy, .features, .faq {
+  padding: 2rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+.seo-copy h2, .features h2, .faq h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.features ul {
+  list-style: disc inside;
+  margin-top: 1rem;
+  padding-left: 1rem;
+}
+
+.features li {
+  margin-bottom: 0.5rem;
+}
+
+.faq details {
+  margin-bottom: 1rem;
   background: #fff;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #777;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .hamburger-menu {
+    display: block;
+  }
+
+  .tool-links {
+    flex-direction: column;
+  }
+
+  #resizer-input {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .upload-box {
+    padding: 1rem;
+  }
 }
