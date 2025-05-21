@@ -1,4 +1,3 @@
-<script>
   const imageInput = document.getElementById("imageInput");
   const imagePreviewSection = document.getElementById("imagePreviewSection");
   const imagePreviewList = document.getElementById("imagePreviewList");
@@ -107,4 +106,3 @@
       document.body.removeChild(a);
     });
   });
-</script>
