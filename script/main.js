@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   // DOM Elements
   const uploadBox = document.getElementById('uploadBox');
   const imageInput = document.getElementById('imageInput');
@@ -15,198 +15,230 @@ document.addEventListener('DOMContentLoaded', function () {
   const loadingIndicator = document.getElementById('loadingIndicator');
   const errorMessage = document.getElementById('errorMessage');
 
+  // State
   let filesQueue = [];
+  let currentIndex = 0;
   let compressedBlobs = [];
 
+  // Event Listeners
   uploadBox.addEventListener('click', () => imageInput.click());
-  uploadBox.addEventListener('dragover', e => {
+  uploadBox.addEventListener('dragover', handleDragOver);
+  uploadBox.addEventListener('dragleave', handleDragLeave);
+  uploadBox.addEventListener('drop', handleDrop);
+  imageInput.addEventListener('change', handleFileSelect);
+  compressBtn.addEventListener('click', compressNextImage);
+  downloadBtn.addEventListener('click', downloadAllCompressedImages);
+
+  function handleDragOver(e) {
     e.preventDefault();
+    e.stopPropagation();
     uploadBox.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
-  });
-  uploadBox.addEventListener('dragleave', () => {
+  }
+
+  function handleDragLeave() {
     uploadBox.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
-  });
-  uploadBox.addEventListener('drop', e => {
+  }
+
+  function handleDrop(e) {
     e.preventDefault();
+    e.stopPropagation();
     uploadBox.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+
     if (e.dataTransfer.files.length) {
       imageInput.files = e.dataTransfer.files;
       handleFileSelect({ target: imageInput });
     }
-  });
-
-  imageInput.addEventListener('change', handleFileSelect);
-  compressBtn.addEventListener('click', compressAllImages);
-  downloadBtn.addEventListener('click', downloadAllCompressedImages);
+  }
 
   function handleFileSelect(e) {
     const files = Array.from(e.target.files);
 
     if (files.length > 10) {
-      return showError('Maximum 10 images allowed.');
+      showError('Maximum 10 images allowed.');
+      return;
     }
 
     const uniqueFiles = [];
     const seen = new Set();
+
     files.forEach(file => {
-      const id = `${file.name}-${file.size}-${file.lastModified}`;
-      if (!seen.has(id)) {
-        seen.add(id);
+      const identifier = `${file.name}-${file.size}-${file.lastModified}`;
+      if (!seen.has(identifier)) {
+        seen.add(identifier);
         uniqueFiles.push(file);
       }
     });
 
     if (uniqueFiles.length === 0) {
-      return showError('Duplicate files are not allowed.');
+      showError('Duplicate files are not allowed.');
+      return;
     }
 
     filesQueue = uniqueFiles;
+    currentIndex = 0;
     compressedBlobs = [];
-    compressBtn.disabled = false;
-    downloadBtn.disabled = true;
     hideError();
 
     showImagePreview(filesQueue[0]);
+    compressBtn.disabled = false;
+    downloadBtn.disabled = true;
   }
 
   function showImagePreview(file) {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function(e) {
       originalImage.src = e.target.result;
       originalPreview.style.display = 'block';
       originalDetails.innerHTML = `
         <div class="file-meta">
-          <p><strong>Name:</strong> ${file.name}</p>
-          <p><strong>Type:</strong> ${file.type}</p>
-          <p><strong>Size:</strong> ${formatFileSize(file.size)}</p>
-          <p><strong>Dimensions:</strong> <span id="originalDimensions">Loading...</span></p>
+          <p><strong>Name:</strong> <span>${file.name}</span></p>
+          <p><strong>Type:</strong> <span>${file.type}</span></p>
+          <p><strong>Size:</strong> <span>${formatFileSize(file.size)}</span></p>
+          <p><strong>Dimensions:</strong> <span id="originalDimensions">Calculating...</span></p>
         </div>
       `;
       const img = new Image();
-      img.onload = function () {
-        document.getElementById('originalDimensions').textContent = `${img.width} × ${img.height}px`;
+      img.onload = function() {
+        document.getElementById('originalDimensions').textContent = `${img.width} × ${img.height} px`;
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
-  async function compressAllImages() {
-    if (!filesQueue.length) return;
-
-    compressBtn.disabled = true;
-    downloadBtn.disabled = true;
-    showLoading(true);
-    hideError();
-
-    for (let i = 0; i < filesQueue.length; i++) {
-      const file = filesQueue[i];
-      try {
-        const targetSizeKB = parseInt(targetSizeInput.value) || 100;
-        const format = formatSelect.value;
-        const dataUrl = await compressImage(file, targetSizeKB, format);
-        const blob = dataURItoBlob(dataUrl);
-        compressedBlobs.push({ blob, name: file.name, format });
-
-        showCompressedPreview(dataUrl, blob, file, format);
-        await new Promise(r => setTimeout(r, 500)); // slight delay for UI update
-      } catch (err) {
-        console.error('Compression failed:', err);
-        showError(`Failed to compress ${file.name}`);
-      }
+  async function compressNextImage() {
+    if (currentIndex >= filesQueue.length) {
+      showError('All images have been compressed.');
+      compressBtn.disabled = true;
+      return;
     }
 
-    showLoading(false);
-    downloadBtn.disabled = false;
-  }
+    try {
+      showLoading(true);
+      hideError();
+      compressedPreview.style.display = 'none';
 
-  function showCompressedPreview(dataUrl, blob, file, format) {
-    compressedImage.src = dataUrl;
-    compressedPreview.style.display = 'block';
+      const file = filesQueue[currentIndex];
+      const targetSizeKB = parseInt(targetSizeInput.value) || 100;
+      const format = formatSelect.value;
 
-    const img = new Image();
-    img.onload = () => {
-      compressedDetails.innerHTML = `
-        <div class="file-meta">
-          <p><strong>New Size:</strong> ${formatFileSize(blob.size)}</p>
-          <p><strong>Reduction:</strong> ${calculateReduction(file.size, blob.size)}%</p>
-          <p><strong>Format:</strong> ${format.toUpperCase()}</p>
-          <p><strong>Dimensions:</strong> ${img.width} × ${img.height}px</p>
-          <p><strong>Quality:</strong> ${Math.round((blob.size / file.size) * 100)}%</p>
-        </div>
-      `;
-    };
-    img.src = dataUrl;
+      const compressedDataUrl = await compressImage(file, targetSizeKB, format);
+      const blob = dataURItoBlob(compressedDataUrl);
+      compressedBlobs.push({ blob, name: file.name });
+
+      compressedImage.src = compressedDataUrl;
+      compressedPreview.style.display = 'block';
+
+      const img = new Image();
+      img.onload = function() {
+        compressedDetails.innerHTML = `
+          <div class="file-meta">
+            <p><strong>New Size:</strong> <span>${formatFileSize(blob.size)}</span></p>
+            <p><strong>Reduction:</strong> <span>${calculateReduction(file.size, blob.size)}%</span></p>
+            <p><strong>Format:</strong> <span>${format.toUpperCase()}</span></p>
+            <p><strong>Dimensions:</strong> <span>${img.width} × ${img.height} px</span></p>
+            <p><strong>Quality:</strong> <span>${Math.round((blob.size/file.size)*100)}% of original</span></p>
+          </div>
+        `;
+      };
+      img.src = compressedDataUrl;
+
+      downloadBtn.disabled = false;
+      currentIndex++;
+
+      if (currentIndex < filesQueue.length) {
+        showImagePreview(filesQueue[currentIndex]);
+      } else {
+        compressBtn.disabled = true;
+      }
+    } catch (error) {
+      showError('Error compressing image: ' + error.message);
+      console.error('Compression error:', error);
+    } finally {
+      showLoading(false);
+    }
   }
 
   async function compressImage(file, targetSizeKB, format) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = async function(event) {
         const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
+        img.onload = async function() {
+          try {
+            let width = img.width;
+            let height = img.height;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-          let width = img.width;
-          let height = img.height;
-          const maxDim = Math.min(Math.max(width, height), 2000);
-          const scale = Math.min(maxDim / width, maxDim / height);
-          width *= scale;
-          height *= scale;
+            const MAX_DIMENSION = Math.min(Math.max(img.width, img.height), 2000);
+            const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+            width *= ratio;
+            height *= ratio;
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
 
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
+            let quality = 0.85;
+            let minQuality = 0.1;
+            let maxQuality = 1.0;
+            let iterations = 0;
+            const maxIterations = 15;
+            const mimeTypeMap = {
+              jpeg: 'image/jpeg',
+              jpg: 'image/jpeg',
+              png: 'image/png',
+              webp: 'image/webp',
+              gif: 'image/gif',
+              bmp: 'image/bmp',
+              avif: 'image/avif'
+            };
+            const mimeType = mimeTypeMap[format.toLowerCase()] || 'image/jpeg';
+            let resultUrl;
 
-          let mimeType = 'image/jpeg';
-          if (format === 'png') mimeType = 'image/png';
-          else if (format === 'webp') mimeType = 'image/webp';
-          else if (format === 'gif') mimeType = 'image/gif';
-          else if (format === 'bmp') mimeType = 'image/bmp';
-
-          let quality = 0.85, minQ = 0.1, maxQ = 1.0, iteration = 0, maxIt = 15;
-          let result, sizeKB;
-
-          do {
-            result = canvas.toDataURL(mimeType, quality);
-            sizeKB = (result.length * 0.75) / 1024;
-
-            if (sizeKB > targetSizeKB) {
-              maxQ = quality;
-              quality = (quality + minQ) / 2;
-              if (iteration > 5 && sizeKB > targetSizeKB * 1.5) {
-                width *= 0.95;
-                height *= 0.95;
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawImage(img, 0, 0, width, height);
+            while (iterations < maxIterations) {
+              iterations++;
+              resultUrl = canvas.toDataURL(mimeType, quality);
+              const sizeKB = (resultUrl.length * 0.75) / 1024;
+              if (Math.abs(sizeKB - targetSizeKB) < targetSizeKB * 0.1) break;
+              if (sizeKB > targetSizeKB) {
+                maxQuality = quality;
+                quality = (quality + minQuality) / 2;
+                if (iterations > 5 && sizeKB > targetSizeKB * 1.5) {
+                  width *= 0.95;
+                  height *= 0.95;
+                  canvas.width = width;
+                  canvas.height = height;
+                  ctx.drawImage(img, 0, 0, width, height);
+                }
+              } else {
+                minQuality = quality;
+                quality = (quality + maxQuality) / 2;
               }
-            } else {
-              minQ = quality;
-              quality = (quality + maxQ) / 2;
             }
-            iteration++;
-          } while (iteration < maxIt && Math.abs(sizeKB - targetSizeKB) > targetSizeKB * 0.1);
-
-          resolve(result);
+            resolve(resultUrl);
+          } catch (error) {
+            reject(error);
+          }
         };
-        img.onerror = () => reject(new Error('Invalid image file.'));
-        img.src = e.target.result;
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = event.target.result;
       };
-      reader.onerror = () => reject(new Error('Failed to read file.'));
+      reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsDataURL(file);
     });
   }
 
   function downloadAllCompressedImages() {
-    if (!compressedBlobs.length) return showError('No compressed images available');
-
-    compressedBlobs.forEach(({ blob, name, format }, index) => {
+    if (compressedBlobs.length === 0) {
+      showError('No compressed images to download');
+      return;
+    }
+    compressedBlobs.forEach(({ blob, name }, index) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const ext = format || name.split('.').pop();
       a.href = url;
+      const ext = formatSelect.value || name.split('.').pop();
       a.download = `compressed_${index + 1}_${name.replace(/\.[^/.]+$/, '')}.${ext}`;
       document.body.appendChild(a);
       a.click();
@@ -216,24 +248,24 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function formatFileSize(bytes) {
-    return bytes < 1024
-      ? bytes + ' bytes'
-      : bytes < 1048576
-      ? (bytes / 1024).toFixed(1) + ' KB'
-      : (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + ' bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
   }
 
-  function calculateReduction(original, compressed) {
-    return Math.round((1 - compressed / original) * 100);
+  function calculateReduction(originalSize, newSize) {
+    return Math.round((1 - (newSize / originalSize)) * 100);
   }
 
   function dataURItoBlob(dataURI) {
     const byteString = atob(dataURI.split(',')[1]);
-    const mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-    return new Blob([ab], { type: mime });
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
   }
 
   function showLoading(show) {
@@ -241,8 +273,8 @@ document.addEventListener('DOMContentLoaded', function () {
     compressBtn.disabled = show;
   }
 
-  function showError(msg) {
-    errorMessage.textContent = msg;
+  function showError(message) {
+    errorMessage.textContent = message;
     errorMessage.style.display = 'block';
   }
 
@@ -250,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
     errorMessage.style.display = 'none';
   }
 
-  // Init
   compressBtn.disabled = true;
   downloadBtn.disabled = true;
   loadingIndicator.style.display = 'none';
