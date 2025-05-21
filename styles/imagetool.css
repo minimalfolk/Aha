@@ -1,181 +1,329 @@
+/* Premium Image Resizer CSS */
 :root {
-  --primary-color: #4361ee;
+  --primary: #4361ee;
   --primary-dark: #3a56d4;
-  --secondary-color: #3f37c9;
-  --accent-color: #4895ef;
-  --light-color: #f8f9fa;
-  --dark-color: #212529;
-  --gray-color: #6c757d;
-  --light-gray: #e9ecef;
-  --success-color: #4bb543;
-  --error-color: #ff3333;
-  --warning-color: #ffcc00;
-  --border-radius: 8px;
-  --box-shadow: 0 2px 10px rgba(67, 97, 238, 0.15);
+  --primary-light: #eef2ff;
+  --success: #4bb543;
+  --text: #2d3748;
+  --text-light: #4a5568;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --radius: 12px;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   --transition: all 0.2s ease;
-  --max-width: 800px;
 }
 
-* {
+/* Base Styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--bg);
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
-               Ubuntu, Cantarell, sans-serif;
-  line-height: 1.5;
-  color: var(--dark-color);
-  background-color: #f5f7ff;
-  padding: 0.5rem;
-}
-
-/* Main Content Sections - Reduced Spacing */
+/* Compact Header Spacing */
 .compress-image {
-  max-width: var(--max-width);
   margin: 0.5rem auto 0.75rem;
+  max-width: 800px;
   padding: 0 1rem;
 }
 
 .compress-image h1 {
   text-align: center;
-  margin-bottom: 0.75rem;
-  color: var(--primary-color);
-  font-size: 1.6rem;
-  font-weight: 600;
+  margin: 0.5rem 0;
+  color: var(--primary);
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
-/* Upload Container - Modern Style */
+/* Convert Links - Minimal Style */
+.convert-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 0.75rem 0;
+}
+
+.convert-links a {
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.convert-links a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Premium Uploader */
 .upload-container {
-  max-width: var(--max-width);
+  max-width: 800px;
   margin: 0.75rem auto;
   padding: 0 1rem;
 }
 
 .upload-box {
-  border: 2px dashed var(--primary-color);
-  border-radius: var(--border-radius);
-  padding: 2rem 1.5rem;
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius);
+  padding: 2.5rem;
   text-align: center;
-  cursor: pointer;
+  background-color: var(--card-bg);
   transition: var(--transition);
-  background-color: white;
-  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  box-shadow: var(--shadow);
 }
 
 .upload-box:hover {
+  border-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
+  box-shadow: 0 10px 15px rgba(67, 97, 238, 0.1);
 }
 
 .upload-box i {
   font-size: 2.5rem;
-  color: var(--primary-color);
+  color: var(--primary);
   margin-bottom: 1rem;
 }
 
 .upload-box h3 {
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: var(--dark-color);
+  font-size: 1.25rem;
+  color: var(--text);
 }
 
 .upload-box p {
-  color: var(--gray-color);
+  color: var(--text-light);
 }
 
 .upload-box p span {
-  color: var(--primary-color);
+  color: var(--primary);
   font-weight: 600;
 }
 
 .supported-formats {
   font-size: 0.85rem;
-  color: var(--gray-color);
+  color: var(--text-light);
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-/* Compression Controls - Always Horizontal */
+/* Horizontal Control Group */
 .compression-options {
-  max-width: var(--max-width);
-  margin: 1rem auto;
-  padding: 0 1rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
 }
 
 .compression-options label {
   font-weight: 500;
   white-space: nowrap;
-  font-size: 0.95rem;
-  color: var(--dark-color);
+  color: var(--text);
 }
 
 .compression-options input[type="number"] {
   flex: 1;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--light-gray);
-  border-radius: var(--border-radius);
-  min-width: 100px;
-  max-width: 150px;
+  max-width: 120px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.compression-options input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
 }
 
 #compressBtn {
-  padding: 0.6rem 1.25rem;
-  background-color: var(--primary-color);
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: var(--border-radius);
-  font-weight: 500;
+  border-radius: var(--radius);
+  font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
   transition: var(--transition);
+  white-space: nowrap;
 }
 
 #compressBtn:hover:not(:disabled) {
   background-color: var(--primary-dark);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(67, 97, 238, 0.2);
 }
 
 #compressBtn:disabled {
-  background-color: var(--light-gray);
-  color: var(--gray-color);
+  background-color: var(--border);
+  color: var(--text-light);
   cursor: not-allowed;
 }
 
-/* Image Previews */
+/* Premium Image Previews */
 .preview-multi-container {
-  max-width: var(--max-width);
-  margin: 1.5rem auto;
+  max-width: 800px;
+  margin: 2rem auto;
   padding: 0 1rem;
 }
 
 .preview-multi-container h3 {
   text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  color: var(--dark-color);
+  margin-bottom: 1.5rem;
+  color: var(--text);
+  font-size: 1.5rem;
+}
+
+#downloadAllBtn {
+  display: block;
+  margin: 0 auto 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--success);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+#downloadAllBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.preview-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.preview-item {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-item img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.preview-details {
+  margin-bottom: 1.25rem;
+}
+
+.preview-detail {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.preview-detail-label {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.preview-detail-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.download-btn {
+  margin-top: auto;
+  padding: 0.75rem;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.download-btn:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Loading Indicator */
+#loadingIndicator {
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#loadingIndicator p {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+#loadingIndicator p::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(67, 97, 238, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive Adjustments */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .preview-list {
+    grid-template-columns: 1fr;
+  }
+  
   .compression-options {
-    gap: 0.5rem;
+    flex-wrap: wrap;
   }
   
   .compression-options input[type="number"] {
-    min-width: 80px;
-    max-width: 120px;
+    max-width: 100%;
   }
   
   #compressBtn {
-    padding: 0.6rem 1rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .convert-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
   }
   
   .upload-box {
-    padding: 1.5rem 1rem;
+    padding: 1.75rem 1rem;
+  }
+  
+  .preview-item {
+    padding: 1.25rem;
   }
 }
