@@ -1,0 +1,242 @@
+:root {
+  --primary-color: #3a5af5;
+  --primary-dark: #2f4bd6;
+  --secondary-color: #3f37c9;
+  --accent-color: #4895ef;
+  --light-color: #f8f9fa;
+  --dark-color: #2d3748;
+  --gray-color: #6c757d;
+  --light-gray: #e9ecef;
+  --success-color: #4bb543;
+  --error-color: #ff3333;
+  --warning-color: #ffcc00;
+  --border-radius: 10px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --transition: all 0.25s ease;
+  --max-width: 800px;
+  --content-width: 90%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
+               Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--dark-color);
+  background-color: #f9fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 1rem;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 1.25rem;
+  color: var(--dark-color);
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--dark-color);
+}
+
+a {
+  color: var(--primary-dark);
+  text-decoration: none;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+a:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* Layout Sections */
+.seo-copy,
+.how-it-works,
+.benefits,
+.faq,
+.internal-links {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2rem;
+  margin: 0 auto 1.5rem;
+  width: var(--content-width);
+  max-width: var(--max-width);
+}
+
+/* SEO Copy Section */
+.seo-copy p {
+  font-size: 1.05rem;
+  text-align: center;
+  color: #4a5568;
+}
+
+/* How It Works Section */
+.how-it-works ol {
+  list-style-type: none;
+  counter-reset: step-counter;
+  padding-left: 0;
+}
+
+.how-it-works li {
+  counter-increment: step-counter;
+  margin-bottom: 1.5rem;
+  padding-left: 2.8rem;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.how-it-works li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0;
+  top: -0.1rem;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Benefits Section */
+.benefits ul {
+  list-style-type: none;
+}
+
+.benefits li {
+  margin-bottom: 1rem;
+  padding-left: 1.8rem;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.benefits li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* FAQ Section */
+.faq details {
+  margin-bottom: 1rem;
+  border: 1px solid #edf2f7;
+  border-radius: var(--border-radius);
+}
+
+.faq summary {
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+.faq p {
+  padding: 0 1rem 1rem;
+  font-size: 0.92rem;
+  color: #4a5568;
+}
+
+/* Internal Links Section */
+.internal-links ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.8rem;
+  list-style: none;
+  padding: 0;
+}
+
+.internal-links a {
+  display: block;
+  padding: 0.7rem;
+  background-color: #f7f9ff;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--primary-dark);
+  border: 1px solid #e2e8f0;
+}
+
+.internal-links a:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --content-width: 95%;
+  }
+  
+  html {
+    font-size: 15px;
+  }
+  
+  .seo-copy,
+  .how-it-works,
+  .benefits,
+  .faq,
+  .internal-links {
+    padding: 1.5rem;
+  }
+  
+  .internal-links ul {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  body {
+    padding: 0.5rem;
+  }
+  
+  .internal-links ul {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  
+  .how-it-works li {
+    padding-left: 2.4rem;
+  }
+  
+  .how-it-works li::before {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}
