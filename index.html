@@ -229,37 +229,49 @@
 </main>
 
   <!-- Upload Container -->
-  <div class="upload-container">
-    <div class="upload-box" id="uploadBox">
-      <i class="fas fa-download"></i>
-      <h3>Drop your images here</h3>
-      <p>or <span>browse files</span></p>
-      <input type="file" id="imageInput" accept="image/*" multiple>
-    </div>
-    <div class="supported-formats">
-      <p>Supports: JPG, PNG, WebP | Max 50MB</p>
-    </div>
+  <!-- Upload Container -->
+<div class="upload-container">
+  <div class="upload-box" id="uploadBox">
+    <i class="fas fa-download"></i>
+    <h3>Drop your images here</h3>
+    <p>or <span>browse files</span></p>
+    <input type="file" id="imageInput" accept="image/*" multiple>
   </div>
+  <div class="supported-formats">
+    <p>Supports: JPG, PNG, WebP | Max 50MB</p>
+  </div>
+</div>
 
-  <!-- Compression Options -->
-  <div class="compression-options">
-    <label for="targetSize">Target Size (KB):</label>
-    <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size" />
-    <button id="compressBtn" disabled>Compress</button>
- </div>
-  
-<!-- Unified Image Preview Section -->
-<section id="imagePreviewSection" class="preview-multi-container" style="display: none;">
-  <h3>Image Previews</h3>
-  <button id="downloadAllBtn" style="display: none; margin-bottom: 10px;">Download All</button>
-  <div id="imagePreviewList" class="preview-list"></div>
-</section>
+<!-- Compression Options -->
+<div class="compression-options">
+  <label for="targetSize">Target Size (KB):</label>
+  <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size" />
+  <label for="formatSelect">Output Format:</label>
+  <select id="formatSelect">
+    <option value="jpeg">JPG</option>
+    <option value="png">PNG</option>
+    <option value="webp">WebP</option>
+  </select>
+  <button id="compressBtn" disabled>Compress</button>
+</div>
+
+<!-- Error Message -->
+<p id="errorMessage" hidden style="color: red;"></p>
 
 <!-- Loading Indicator -->
 <div id="loadingIndicator" hidden>
-  <p>Processing your image...</p>
+  <p>Processing your images...</p>
 </div>
 
+<!-- Preview Section for Multiple Images -->
+<section id="imagePreviewSection" class="preview-multi-container" style="display: none;">
+  <h3>Compressed Image Previews</h3>
+  <button id="downloadAllBtn" style="display: none; margin-bottom: 10px;">Download All</button>
+  <div id="imagePreviewList" class="preview-list">
+    <!-- Individual image cards will be appended here dynamically -->
+  </div>
+</section>
+  
 <section class="seo-copy">
   <p>Need images to a specific size? ReducePic lets you resize JPG, PNG, GIF, WebP, and BMP images online by setting your **exact target size** in KB or dimensions. Whether for passport photos, job forms, websites, or social media—get the your desire size you need in one click.</p>
 </section>
