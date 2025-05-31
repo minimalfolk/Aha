@@ -215,62 +215,61 @@
 </header>
 
 <main>
-  <section class="compress-image">
-    <h1>Resize Your Image</h1>
-    
-   <div class="tool-links convert-links">
-    <p>Convert to</p>
-    <a href="/convert-to-jpg">JPG</a>
-    <a href="/convert-to-png">PNG</a>
-    <a href="/convert-to-gif">GIF</a>
-    <a href="/convert-to-webp">WebP</a>
+     <section class="compress-image">
+  <h1>Resize Your Image</h1>
+
+  <!-- Upload Container -->
+  <div class="upload-container">
+    <div class="upload-box" id="uploadBox">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <h3>Drop your images here</h3>
+      <p>or <span>browse files</span></p>
+      <input type="file" id="imageInput" accept="image/*" multiple>
     </div>
-  </section>
-</main>
-
-  <!-- Upload Container -->
-  <!-- Upload Container -->
-<div class="upload-container">
-  <div class="upload-box" id="uploadBox">
-    <i class="fas fa-download"></i>
-    <h3>Drop your images here</h3>
-    <p>or <span>browse files</span></p>
-    <input type="file" id="imageInput" accept="image/*" multiple>
+    <div class="supported-formats">
+      <p>Supports: JPG, PNG, WebP | Max 50MB</p>
+    </div>
   </div>
-  <div class="supported-formats">
-    <p>Supports: JPG, PNG, WebP | Max 50MB</p>
+
+  <!-- Error Message -->
+  <div id="errorMessage" class="error-message" hidden></div>
+
+  <!-- Original Image Preview -->
+  <figure id="originalPreview" class="preview-container" style="display: none;">
+        <img id="originalImage" alt="Original image preview" loading="lazy" />
+        <figcaption id="originalDetails"></figcaption>
+  </figure>
+
+  <!-- Compression Options -->
+  <div class="compression-options">
+    <label for="targetSize">Target Size (KB):</label>
+    <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size in KB" />
+    
+    <label for="formatSelect">Output Format:</label>
+    <select id="formatSelect">
+      <option value="jpg">JPG</option>
+      <option value="jpeg">JPEG</option>
+      <option value="png">PNG</option>
+      <option value="webp">WebP</option>
+      <option value="gif">GIF</option>
+      <option value="bmp">BMP</option>
+    </select>
+
+    <button id="compressBtn" disabled>Reduce Now</button>
   </div>
-</div>
 
-<!-- Compression Options -->
-<div class="compression-options">
-  <label for="targetSize">Target Size (KB):</label>
-  <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size" />
-  <label for="formatSelect">Output Format:</label>
-  <select id="formatSelect">
-    <option value="jpeg">JPG</option>
-    <option value="png">PNG</option>
-    <option value="webp">WebP</option>
-  </select>
-  <button id="compressBtn" disabled>Compress</button>
-</div>
-
-<!-- Error Message -->
-<p id="errorMessage" hidden style="color: red;"></p>
-
-<!-- Loading Indicator -->
-<div id="loadingIndicator" hidden>
-  <p>Processing your images...</p>
-</div>
-
-<!-- Preview Section for Multiple Images -->
-<section id="imagePreviewSection" class="preview-multi-container" style="display: none;">
-  <h3>Compressed Image Previews</h3>
-  <button id="downloadAllBtn" style="display: none; margin-bottom: 10px;">Download All</button>
-  <div id="imagePreviewList" class="preview-list">
-    <!-- Individual image cards will be appended here dynamically -->
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" hidden>
+    <p>Compressing your image...</p>
   </div>
-</section>
+
+  <!-- Compressed Images Preview -->
+  <figure id="compressedPreview" class="preview-container" style="display: none;">
+        <img id="compressedImage" alt="Compressed image preview" loading="lazy" />
+        <figcaption id="compressedDetails"></figcaption>
+        <button id="downloadBtn" disabled>Download Image</button>
+  </figure>
+    </section>
   
 <section class="seo-copy">
   <p>Need images to a specific size? ReducePic lets you resize JPG, PNG, GIF, WebP, and BMP images online by setting your **exact target size** in KB or dimensions. Whether for passport photos, job forms, websites, or social media—get the your desire size you need in one click.</p>
