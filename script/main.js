@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   imageInput.addEventListener('change', (e) => {
     images = Array.from(e.target.files);
+    compressedPreview.innerHTML = '';
     if (images.length > 0) {
       compressBtn.disabled = false;
       displayOriginalImage(images[0]);
@@ -41,40 +42,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     errorMessage.hidden = true;
     loadingIndicator.hidden = false;
-    compressedPreview.style.display = 'none';
+    compressedPreview.innerHTML = '';
+    compressedPreview.style.display = 'grid';
 
     const results = [];
 
-    for (const image of images) {
+    for (const [index, image] of images.entries()) {
+      const status = document.createElement('p');
+      status.textContent = `Processing ${image.name}...`;
+      compressedPreview.appendChild(status);
+
       try {
         const { blob, url, dimensions } = await compressImageToTarget(image, targetSizeKB * 1024, format);
         results.push({ blob, url, dimensions, original: image });
+
+        const preview = document.createElement('div');
+        preview.style.border = '1px solid #ccc';
+        preview.style.padding = '8px';
+        preview.style.margin = '4px';
+        preview.style.textAlign = 'center';
+        preview.innerHTML = `
+          <img src="${url}" alt="Compressed Image" style="max-width: 150px; margin-bottom: 4px;" />
+          <p><strong>${image.name}</strong></p>
+          <p>${(blob.size / 1024).toFixed(1)} KB • ${dimensions.width}×${dimensions.height}px</p>
+          <p>↓ ${calculateReduction(image.size, blob.size)}%</p>
+        `;
+        compressedPreview.appendChild(preview);
+        compressedPreview.removeChild(status);
       } catch (err) {
+        console.warn(`Compression failed for ${image.name}:`, err);
         errorMessage.textContent = `Error processing ${image.name}: ${err.message}`;
         errorMessage.hidden = false;
       }
     }
 
     if (results.length > 0) {
-      const first = results[0];
-      compressedImage.src = first.url;
-      compressedDetails.innerHTML = `
-        <p><strong>New Size:</strong> ${(first.blob.size / 1024).toFixed(1)} KB</p>
-        <p><strong>Format:</strong> ${format.toUpperCase()}</p>
-        <p><strong>Dimensions:</strong> ${first.dimensions.width} × ${first.dimensions.height} px</p>
-        <p><strong>Reduction:</strong> ${calculateReduction(first.original.size, first.blob.size)}%</p>
-      `;
-      compressedPreview.style.display = 'block';
       downloadBtn.disabled = false;
-
       downloadBtn.onclick = () => {
         results.forEach(({ blob, original }, idx) => {
           const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
+          const objectURL = URL.createObjectURL(blob);
+          a.href = objectURL;
           a.download = `compressed_${idx + 1}_${original.name.replace(/\.[^/.]+$/, '')}.${format}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(objectURL), 2000);
         });
       };
     } else {
@@ -96,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p><strong>Dimensions:</strong> ${img.width} × ${img.height} px</p>
       `;
       originalPreview.style.display = 'block';
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
     };
     img.src = url;
   }
@@ -134,15 +148,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let blob = null;
     let lastGoodBlob = null;
     let lastGoodDims = { width, height };
+    const mimeType = format === 'jpg' ? 'image/jpeg' : `image/${format}`;
 
-    // Phase 1: Binary search quality
     for (let i = 0; i < 12; i++) {
       canvas.width = width;
       canvas.height = height;
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
-      blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`, quality));
+      blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, quality));
       if (!blob) throw new Error('Compression failed.');
 
       if (blob.size <= targetBytes) {
@@ -157,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Phase 2: Slightly reduce dimensions if quality wasn't enough
     while (!lastGoodBlob && width > 100 && height > 100) {
       width = Math.round(width * 0.95);
       height = Math.round(height * 0.95);
@@ -167,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
-      blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`, 0.85));
+      blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, 0.85));
       if (!blob) throw new Error('Failed to compress further.');
 
       if (blob.size <= targetBytes) {
@@ -178,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!lastGoodBlob) throw new Error('Could not meet target size without degrading too much.');
-
     const url = URL.createObjectURL(lastGoodBlob);
     return { blob: lastGoodBlob, url, dimensions: lastGoodDims };
   }
