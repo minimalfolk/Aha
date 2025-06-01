@@ -17,7 +17,6 @@
   --max-width: 1200px;
 }
 
-/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -26,12 +25,11 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: 14px; /* Base font reduced */
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--dark-color);
   background-color: #f5f7ff;
   -webkit-font-smoothing: antialiased;
@@ -41,25 +39,95 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
   color: var(--dark-color);
 }
 
-.compress-image h1 {
-  font-size: 1.8rem;
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
   text-align: center;
-  margin-bottom: 1.2rem;
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+}
+
+.btn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.btn:disabled {
+  background-color: var(--gray-color);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Main Image Compress Section */
+.compress-image {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2.5rem;
+  margin: 2rem auto 4rem;
+  max-width: 900px;
+}
+
+.compress-image h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+  font-size: 2.2rem;
 }
 
 /* Upload Container */
 .upload-container {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .upload-box {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
   text-align: center;
   cursor: pointer;
   transition: var(--transition);
@@ -70,25 +138,25 @@ h1, h2, h3, h4, h5, h6 {
 
 .upload-box:hover {
   background-color: rgba(67, 97, 238, 0.1);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--box-shadow-hover);
 }
 
 .upload-box i {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: var(--primary-color);
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .upload-box h3 {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
   color: var(--dark-color);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .upload-box p {
   color: var(--gray-color);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .upload-box p span {
@@ -109,130 +177,89 @@ h1, h2, h3, h4, h5, h6 {
 .supported-formats {
   text-align: center;
   margin-top: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--gray-color);
 }
 
-/* Preview Grids */
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.image-card {
+/* Preview Containers */
+.preview-container {
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  padding: 0.8rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   border: 1px solid var(--light-gray);
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 1.5rem;
 }
 
-.image-card img {
-  max-height: 150px;
+.preview-container img {
+  max-height: 300px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   border-radius: var(--border-radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preview-container figcaption {
+  text-align: center;
+  width: 100%;
+}
+
+.preview-container figcaption p {
   margin-bottom: 0.5rem;
-}
-
-.image-card figcaption {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--dark-color);
-  width: 100%;
 }
 
-.image-card figcaption p {
-  margin: 0.2rem 0;
-  font-size: 0.8rem;
-}
-
-.image-card figcaption p strong {
+.preview-container figcaption p strong {
   color: var(--dark-color);
   font-weight: 600;
-}
-
-.image-card .downloadBtn {
-  margin-top: 0.5rem;
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 0.85rem;
-  background-color: var(--success-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.image-card .downloadBtn:hover {
-  background-color: #3fa039;
-  transform: translateY(-2px);
-  box-shadow: var(--box-shadow-hover);
-}
-
-.image-card .downloadBtn:disabled {
-  background-color: var(--gray-color);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Compression Options */
 .compression-options {
   background-color: white;
   border-radius: var(--border-radius);
-  padding: 1.2rem;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: var(--box-shadow);
 }
 
 .compression-options label {
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--dark-color);
-  font-size: 0.9rem;
-}
-
-.compression-options input[type="number"],
-.compression-options input[type="checkbox"],
-.compression-options select {
-  margin-right: 0.5rem;
 }
 
 .compression-options input[type="number"] {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.75rem;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .compression-options select {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.75rem;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
   background-color: white;
   cursor: pointer;
 }
 
 #compressBtn {
   width: 100%;
-  padding: 0.9rem;
-  font-size: 1rem;
+  padding: 1rem;
+  font-size: 1.1rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -240,7 +267,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  margin-top: 0.5rem;
 }
 
 #compressBtn:hover {
@@ -249,7 +275,29 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--box-shadow-hover);
 }
 
-#compressBtn:disabled {
+/* Download Button */
+#downloadBtn {
+  width: 100%;
+  max-width: 300px;
+  padding: 1rem;
+  font-size: 1.1rem;
+  background-color: var(--success-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 1rem;
+}
+
+#downloadBtn:hover {
+  background-color: #3fa039;
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+#downloadBtn:disabled {
   background-color: var(--gray-color);
   cursor: not-allowed;
   transform: none;
@@ -259,7 +307,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Loading Indicator */
 #loadingIndicator {
   text-align: center;
-  padding: 1.5rem;
+  padding: 2rem;
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
@@ -273,25 +321,28 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
 }
 
 #loadingIndicator p::before {
   content: '';
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border: 3px solid rgba(67, 97, 238, 0.2);
   border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Error Message */
 .error-message {
   background-color: #ffebee;
   color: var(--error-color);
-  padding: 0.8rem;
+  padding: 1rem;
   border-radius: var(--border-radius);
   margin-bottom: 1.5rem;
   border-left: 4px solid var(--error-color);
@@ -299,7 +350,6 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
 }
 
 .error-message::before {
@@ -307,58 +357,72 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background-color: var(--error-color);
   color: white;
   border-radius: 50%;
   font-weight: bold;
-  font-size: 0.8rem;
-}
-
-/* Animations */
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  html {
-    font-size: 13px;
-  }
-  
   .compress-image {
-    padding: 1.2rem;
+    padding: 1.5rem;
   }
   
   .upload-box {
-    padding: 1.5rem 1rem;
+    padding: 2rem 1rem;
   }
   
-  .preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 0.8rem;
-  }
-  
-  .image-card img {
-    max-height: 120px;
-  }
-  
-  .compression-options {
+  .preview-container {
     padding: 1rem;
   }
 }
 
+/* Grid Preview Layout for Multiple Images */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Adjusted for Original & Compressed Image Cards */
+.preview-grid .preview-container {
+  align-items: stretch;
+  text-align: center;
+}
+
+/* Advanced Settings Toggle */
+#toggleAdvanced {
+  margin-right: 0.5rem;
+}
+
+#advancedSettings {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px dashed var(--light-gray);
+  border-radius: var(--border-radius);
+  background-color: #fafbff;
+  transition: var(--transition);
+}
+
+/* Improve Responsive Input & Select in Compression Options */
+.compression-options input[type="number"],
+.compression-options select {
+  min-height: 44px;
+}
+
+/* Responsive for Upload Box + Options */
 @media (max-width: 480px) {
-  .preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-  
-  .image-card {
+  .compression-options input,
+  .compression-options select {
+    font-size: 0.95rem;
     padding: 0.6rem;
   }
-  
-  .image-card figcaption p {
-    font-size: 0.75rem;
+
+  .preview-grid {
+    grid-template-columns: 1fr;
   }
 }
