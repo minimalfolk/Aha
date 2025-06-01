@@ -20,10 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (images.length > 0) {
       compressBtn.disabled = false;
       displayOriginalImage(images[0]);
+      errorMessage.hidden = true;
+      compressedPreview.style.display = 'none';
+      downloadBtn.disabled = true;
     } else {
       compressBtn.disabled = true;
       originalPreview.style.display = 'none';
+      compressedPreview.style.display = 'none';
       errorMessage.hidden = true;
+      downloadBtn.disabled = true;
     }
   });
 
@@ -42,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     errorMessage.hidden = true;
     loadingIndicator.hidden = false;
     compressedPreview.style.display = 'none';
+    downloadBtn.disabled = true;
 
     const results = [];
 
@@ -77,8 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.removeChild(a);
         });
       };
-    } else {
-      downloadBtn.disabled = true;
     }
 
     loadingIndicator.hidden = true;
@@ -135,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastGoodBlob = null;
     let lastGoodDims = { width, height };
 
-    // Phase 1: Binary search quality
     for (let i = 0; i < 12; i++) {
       canvas.width = width;
       canvas.height = height;
@@ -157,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Phase 2: Slightly reduce dimensions if quality wasn't enough
     while (!lastGoodBlob && width > 100 && height > 100) {
       width = Math.round(width * 0.95);
       height = Math.round(height * 0.95);
