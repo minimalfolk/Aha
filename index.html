@@ -194,30 +194,36 @@
   </header>
 
   <main>
-  <section class="compress-image">
-  <h1>Resize Your Images</h1>
+    <section class="compress-image">
+  <h1>Resize Your Image</h1>
 
   <!-- Upload Container -->
-  <div class="upload-container">
-    <div class="upload-box" id="uploadBox">
-      <i class="fas fa-cloud-upload-alt"></i>
-      <h3>Drop your images here</h3>
-      <p>or <span>browse files</span></p>
-      <input type="file" id="imageInput" accept="image/*" multiple>
-    </div>
-    <div class="supported-formats">
-      <p>Supports: JPG, PNG, WebP | Max 50MB</p>
-    </div>
+<div class="upload-container">
+  <div class="upload-box" id="uploadBox">
+    <i class="fas fa-cloud-upload-alt"></i>
+    <h3>Drop your images here</h3>
+    <p>or <span>browse files</span></p>
+    <input type="file" id="imageInput" accept="image/*" multiple>
+  </div>
+  <div class="supported-formats">
+    <p>Supports: JPG, PNG, WebP | Max 50MB</p>
+  </div>
+</div>
+
+<!-- Original Image Previews -->
+<div id="originalPreview" class="preview-grid" style="display: none;"></div>
+
+<!-- Compression Options -->
+<div class="compression-options">
+  <label for="targetSize">Target Size (KB):</label>
+  <input type="number" id="targetSize" min="10" max="5000" step="10" placeholder="Enter size in KB" />
+
+  <div style="margin-top: 10px;">
+    <input type="checkbox" id="toggleAdvanced" />
+    <label for="toggleAdvanced">Advanced options</label>
   </div>
 
-  <!-- Original Image Previews -->
-  <div id="originalPreview" class="multi-preview-container"></div>
-
-  <!-- Compression Options -->
-  <div class="compression-options">
-    <label for="targetSize">Target Size (KB):</label>
-    <input type="number" id="targetSize" min="10" max="5000" step="100" placeholder="Enter size in KB" />
-
+  <div id="advancedSettings" style="display: none;">
     <label for="formatSelect">Output Format:</label>
     <select id="formatSelect">
       <option value="jpg">JPG</option>
@@ -227,24 +233,18 @@
       <option value="gif">GIF</option>
       <option value="bmp">BMP</option>
     </select>
-
-    <button id="compressBtn" disabled>Reduce Now</button>
   </div>
 
-  <!-- Loading Indicator -->
-  <div id="loadingIndicator" hidden>
-    <p>Processing images...</p>
-  </div>
+  <button id="compressBtn" disabled>Reduce Now</button>
+</div>
 
-  <!-- Compressed Images Previews -->
-  <div id="compressedPreview" class="multi-preview-container" hidden></div>
+<!-- Loading Indicator -->
+<div id="loadingIndicator" hidden>
+  <p>Processing images...</p>
+</div>
 
-  <!-- Actions -->
-  <div class="actions" id="actionsContainer" style="margin-top: 20px;" hidden>
-    <button id="downloadBtn">Download All</button>
-  </div>
-</section>
-  </main>
+<!-- Compressed Images Preview -->
+<div id="compressedPreview" class="preview-grid" style="display: none;"></div>
 
     <section class="features">
   <h2>Why Choose ReducePic?</h2>
@@ -294,7 +294,7 @@
 </section>
 
     <section class="internal-links">
-  <h2>Resize Images to KB</h2>
+  <h2>Resize Images to Specific Sizes</h2>
   <ul>
     <li><a href="/resize-to-10kb">Resize to 10 KB</a></li>
     <li><a href="/resize-to-20kb">Resize to 20 KB</a></li>
@@ -313,7 +313,7 @@
       <div class="footer-col footer-about">
         <div class="footer-logo">
           <i class="fas fa-compress-alt" aria-hidden="true"></i>
-          <span>ReducePic</span>
+          <span>ReducePic India</span>
         </div>
         <p>ReducePic is your go-to tool for fast, free, and high-quality image compression and resizing.</p>
         <div class="social-links">
@@ -369,7 +369,7 @@
   document.getElementById("currentYear").textContent = new Date().getFullYear();
 </script>
 
-  <script src="script/core.js" defer></script>
+  <script src="script/main.js" defer></script>
   <script src="script/nav.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
