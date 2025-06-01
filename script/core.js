@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const compressBtn = document.getElementById('compressBtn');
   const targetSizeInput = document.getElementById('targetSize');
   const formatSelect = document.getElementById('formatSelect');
-  const errorMessage = document.getElementById('errorMessage');
+  const errorMessage = ensureElement('errorMessage', 'div', { hidden: true, style: 'color: red; margin: 1em 0;' });
   const loadingIndicator = document.getElementById('loadingIndicator');
   const originalPreview = document.getElementById('originalPreview');
   const compressedPreview = document.getElementById('compressedPreview');
   const downloadBtn = document.getElementById('downloadBtn');
-  const downloadAllBtn = document.getElementById('downloadAllBtn'); // New button
+  const downloadAllBtn = ensureElement('downloadAllBtn', 'button', { disabled: true, style: 'margin-left: 8px;' }, 'Download All');
 
   let images = [];
   let compressedResults = [];
@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
   downloadBtn.disabled = true;
   downloadAllBtn.disabled = true;
 
+  // Insert downloadAllBtn after downloadBtn if not present in DOM
+  if (!downloadAllBtn.parentNode) {
+    downloadBtn?.parentNode?.insertBefore(downloadAllBtn, downloadBtn.nextSibling);
+  }
+
   // Handle file selection
   imageInput.addEventListener('change', (e) => {
     images = Array.from(e.target.files);
@@ -27,7 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (images.length > 0) {
       compressBtn.disabled = false;
-      displayOriginalImages(images); // Changed to show all images
+      displayOriginalImages(images);
+      downloadBtn.disabled = true;
+      downloadAllBtn.disabled = true;
     } else {
       compressBtn.disabled = true;
       downloadBtn.disabled = true;
@@ -50,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startLoading();
-    compressedResults = []; // Reset previous results
+    compressedResults = [];
 
     try {
       for (const image of images) {
@@ -65,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       displayCompressedResults();
+      downloadBtn.disabled = false;
       downloadAllBtn.disabled = false;
     } catch (err) {
       showError(`Error during compression: ${err.message}`);
@@ -78,6 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
     compressedResults.forEach((result, idx) => {
       downloadImage(result.blob, `compressed_${idx + 1}_${result.original.name}`, formatSelect.value);
     });
+  });
+
+  // Download single handler for legacy downloadBtn (downloads first compressed image)
+  downloadBtn.addEventListener('click', () => {
+    if (compressedResults.length) {
+      const result = compressedResults[0];
+      downloadImage(result.blob, `compressed_${result.original.name}`, formatSelect.value);
+    }
   });
 
   // Helper functions
@@ -153,23 +169,99 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
-  // Keep your existing compression functions:
-  // loadImage(), compressImageToTarget(), calculateReduction()
-  
-  // Add these UI helpers:
+  // Compression logic helpers
+  async function compressImageToTarget(file, targetSize, format) {
+    // Load image
+    const img = await loadImage(file);
+    // Draw on canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    // Try different quality steps to get as close as possible to the target size
+    let quality = 0.92;
+    let lastGoodBlob = null;
+    let lastGoodUrl = '';
+    let lastGoodDims = { width: img.width, height: img.height };
+
+    for (let tries = 0; tries < 7; tries++) {
+      const blob = await new Promise(resolve => 
+        canvas.toBlob(resolve, 'image/' + (format === 'jpg' ? 'jpeg' : format), quality)
+      );
+      if (!blob) break;
+      if (blob.size <= targetSize || quality <= 0.4) {
+        lastGoodBlob = blob;
+        lastGoodUrl = URL.createObjectURL(blob);
+        break;
+      }
+      lastGoodBlob = blob;
+      lastGoodUrl = URL.createObjectURL(blob);
+      quality -= 0.18;
+    }
+    return {
+      blob: lastGoodBlob,
+      url: lastGoodUrl,
+      dimensions: lastGoodDims,
+    };
+  }
+
+  function calculateReduction(originalSize, newSize) {
+    if (!originalSize) return 0;
+    return Math.round(100 - (newSize / originalSize) * 100);
+  }
+
+  function loadImage(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        resolve(img);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  // UI helpers
   function startLoading() {
-    loadingIndicator.hidden = false;
+    if (loadingIndicator) loadingIndicator.hidden = false;
     compressBtn.disabled = true;
     errorMessage.hidden = true;
   }
   
   function stopLoading() {
-    loadingIndicator.hidden = true;
+    if (loadingIndicator) loadingIndicator.hidden = true;
     compressBtn.disabled = false;
   }
   
   function showError(message) {
     errorMessage.textContent = message;
     errorMessage.hidden = false;
+  }
+
+  // Utility: ensures an element with id exists, otherwise creates and inserts it
+  function ensureElement(id, tag, attrs = {}, textContent = '') {
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement(tag);
+      el.id = id;
+      Object.keys(attrs).forEach(key => {
+        el[key] = attrs[key];
+      });
+      if (textContent) el.textContent = textContent;
+      // Default insertion location: after imageInput or at body end
+      if (id === 'errorMessage') {
+        imageInput.parentNode.insertBefore(el, imageInput.nextSibling);
+      } else if (id === 'downloadAllBtn') {
+        // Insert after downloadBtn if possible
+        downloadBtn?.parentNode?.insertBefore(el, downloadBtn.nextSibling);
+      } else {
+        document.body.appendChild(el);
+      }
+    }
+    return el;
   }
 });
