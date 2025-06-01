@@ -17,6 +17,7 @@
   --max-width: 1200px;
 }
 
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -69,6 +70,7 @@ button {
   transition: var(--transition);
 }
 
+/* Layout Components */
 .container {
   width: 100%;
   max-width: var(--max-width);
@@ -76,6 +78,7 @@ button {
   padding: 0 1.5rem;
 }
 
+/* Buttons */
 .btn {
   display: inline-block;
   padding: 0.75rem 1.5rem;
@@ -102,7 +105,7 @@ button {
   box-shadow: none;
 }
 
-/* Main Image Compress Section */
+/* Image Compress Section */
 .compress-image {
   background-color: white;
   border-radius: var(--border-radius);
@@ -218,6 +221,76 @@ button {
 .preview-container figcaption p strong {
   color: var(--dark-color);
   font-weight: 600;
+}
+
+/* Preview Wrapper for Multiple Images */
+.preview-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual Image Card */
+.image-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem;
+  border: 1px solid var(--light-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Image Inside Card */
+.image-card img {
+  max-height: 200px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
+}
+
+/* Image Caption & File Details */
+.image-card figcaption {
+  font-size: 0.9rem;
+  color: var(--dark-color);
+}
+
+.image-card figcaption p {
+  margin: 0.25rem 0;
+}
+
+/* Download Button for Each Image */
+.image-card .downloadBtn {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  background-color: var(--success-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.image-card .downloadBtn:hover {
+  background-color: #3fa039;
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.image-card .downloadBtn:disabled {
+  background-color: var(--gray-color);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Compression Options */
@@ -377,5 +450,18 @@ button {
   
   .preview-container {
     padding: 1rem;
+  }
+  
+  .preview-wrapper {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .image-card img {
+    max-height: 150px;
+  }
+
+  .image-card .downloadBtn {
+    font-size: 0.85rem;
   }
 }
