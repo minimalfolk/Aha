@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | ReducePic.in</title>
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-dark: #3a56d4;
+      --accent-color: #4895ef;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --gray-color: #6c757d;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --box-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: var(--dark-color);
+      background-color: #f5f7ff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .error-container {
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 0.8s ease forwards, slideUp 0.8s ease forwards;
+    }
+
+    .error-content {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .error-graphic {
+      margin-bottom: 2rem;
+      position: relative;
+      height: 150px;
+    }
+
+    .error-image {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: float 4s ease-in-out infinite, pulse 2s ease-in-out infinite alternate;
+    }
+
+    .error-image.broken {
+      animation: shake 0.5s ease infinite, float 4s ease-in-out infinite;
+    }
+
+    .error-code {
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(67, 97, 238, 0.2);
+      animation: glitch 1s linear infinite;
+    }
+
+    .error-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--dark-color);
+    }
+
+    .error-message {
+      color: var(--gray-color);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      text-align: center;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow-hover);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(30deg);
+      transition: all 0.3s;
+    }
+
+    .btn:hover::after {
+      left: 100%;
+    }
+
+    /* Floating bubbles background */
+    .bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: rgba(67, 97, 238, 0.1);
+      border-radius: 50%;
+      animation: rise 15s infinite ease-in;
+    }
+
+    .bubble:nth-child(1) {
+      width: 40px;
+      height: 40px;
+      left: 10%;
+      animation-duration: 8s;
+    }
+
+    .bubble:nth-child(2) {
+      width: 20px;
+      height: 20px;
+      left: 20%;
+      animation-duration: 5s;
+      animation-delay: 1s;
+    }
+
+    .bubble:nth-child(3) {
+      width: 50px;
+      height: 50px;
+      left: 35%;
+      animation-duration: 7s;
+      animation-delay: 2s;
+    }
+
+    .bubble:nth-child(4) {
+      width: 80px;
+      height: 80px;
+      left: 50%;
+      animation-duration: 11s;
+      animation-delay: 0s;
+    }
+
+    .bubble:nth-child(5) {
+      width: 35px;
+      height: 35px;
+      left: 55%;
+      animation-duration: 6s;
+      animation-delay: 1s;
+    }
+
+    .bubble:nth-child(6) {
+      width: 45px;
+      height: 45px;
+      left: 65%;
+      animation-duration: 8s;
+      animation-delay: 3s;
+    }
+
+    .bubble:nth-child(7) {
+      width: 25px;
+      height: 25px;
+      left: 75%;
+      animation-duration: 7s;
+      animation-delay: 2s;
+    }
+
+    .bubble:nth-child(8) {
+      width: 80px;
+      height: 80px;
+      left: 80%;
+      animation-duration: 6s;
+      animation-delay: 1s;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, -15px); }
+    }
+
+    @keyframes pulse {
+      from { transform: translate(-50%, 0) scale(1); }
+      to { transform: translate(-50%, 0) scale(1.05); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+      20% { transform: translate(-50%, -5px) rotate(5deg); }
+      40% { transform: translate(-50%, 5px) rotate(-5deg); }
+      60% { transform: translate(-50%, -5px) rotate(5deg); }
+      80% { transform: translate(-50%, 5px) rotate(-5deg); }
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    @keyframes rise {
+      0% {
+        bottom: -100px;
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      100% {
+        bottom: 100vh;
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .error-code {
+        font-size: 4rem;
+      }
+      
+      .error-title {
+        font-size: 1.5rem;
+      }
+      
+      .error-message {
+        font-size: 1rem;
+      }
+      
+      .error-image {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated background bubbles -->
+  <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <div class="error-container">
+    <div class="error-content">
+      <div class="error-graphic">
+        <img src="https://cdn-icons-png.flaticon.com/512/755/755014.png" alt="404 Error" class="error-image broken" id="brokenImage">
+      </div>
+      
+      <h1 class="error-code">404</h1>
+      <h2 class="error-title">Oops! Image Not Found</h2>
+      <p class="error-message">
+        The page you're looking for seems to have been compressed out of existence. 
+        Don't worry, we'll help you find your way back to smaller file sizes!
+      </p>
+      <a href="/" class="btn">Back to ReducePic.in</a>
+    </div>
+  </div>
+
+  <script>
+    // Interactive animation for the broken image
+    const brokenImage = document.getElementById('brokenImage');
+    let isBroken = true;
+
+    brokenImage.addEventListener('click', function() {
+      if (isBroken) {
+        this.classList.remove('broken');
+        this.src = "https://cdn-icons-png.flaticon.com/512/3176/3176158.png";
+        isBroken = false;
+      } else {
+        this.classList.add('broken');
+        this.src = "https://cdn-icons-png.flaticon.com/512/755/755014.png";
+        isBroken = true;
+      }
+    });
+
+    // Add floating compression icons that follow mouse
+    document.addEventListener('DOMContentLoaded', function() {
+      const body = document.querySelector('body');
+      const colors = ['#4361ee', '#4895ef', '#3a56d4', '#3f37c9'];
+      
+      for (let i = 0; i < 12; i++) {
+        const icon = document.createElement('div');
+        icon.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 7H16M8 11H16M8 15H12M20 4H4V20H20V4Z" stroke="${colors[i%4]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+        icon.style.position = 'absolute';
+        icon.style.width = '24px';
+        icon.style.height = '24px';
+        icon.style.opacity = '0.7';
+        icon.style.pointerEvents = 'none';
+        icon.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
+        icon.style.transition = 'transform 0.5s ease-out';
+        icon.style.zIndex = '1';
+        body.appendChild(icon);
+        
+        // Make icons follow mouse with delay
+        document.addEventListener('mousemove', function(e) {
+          setTimeout(() => {
+            const x = e.clientX + (Math.random() * 40 - 20);
+            const y = e.clientY + (Math.random() * 40 - 20);
+            icon.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random() * 360}deg)`;
+          }, i * 50);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
