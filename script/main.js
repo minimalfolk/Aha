@@ -1,130 +1,190 @@
+<!-- Include JSZip from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
 document.addEventListener('DOMContentLoaded', () => {
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
+  const zipDownloadBtn = document.getElementById('zipDownloadBtn');
   const targetSizeInput = document.getElementById('targetSize');
   const formatSelect = document.getElementById('formatSelect');
-  const errorMessage = document.getElementById('errorMessage');
   const loadingIndicator = document.getElementById('loadingIndicator');
-  const originalPreview = document.getElementById('originalPreview');
-  const originalImage = document.getElementById('originalImage');
-  const originalDetails = document.getElementById('originalDetails');
-  const compressedPreview = document.getElementById('compressedPreview');
-  const compressedImage = document.getElementById('compressedImage');
-  const compressedDetails = document.getElementById('compressedDetails');
-  const downloadBtn = document.getElementById('downloadBtn');
+  const previewContainer = document.getElementById('previewContainer');
 
   let images = [];
+  let compressedFiles = [];
 
-  imageInput.addEventListener('change', (e) => {
-    images = Array.from(e.target.files);
-    compressedPreview.innerHTML = '';
-    if (images.length > 0) {
-      compressBtn.disabled = false;
-      displayOriginalImage(images[0]);
-    } else {
-      compressBtn.disabled = true;
-      originalPreview.style.display = 'none';
-      errorMessage.hidden = true;
+  imageInput.addEventListener('change', async (e) => {
+    images = Array.from(e.target.files); // no limit now
+    compressedFiles = [];
+    compressBtn.disabled = images.length === 0;
+    zipDownloadBtn.disabled = true;
+    previewContainer.innerHTML = '';
+
+    for (const [index, file] of images.entries()) {
+      if (!file.type.match('image.*')) continue;
+      try {
+        const img = await loadImage(file);
+        const preview = createPreviewElement(file, img, index);
+        previewContainer.appendChild(preview);
+      } catch (err) {
+        console.error('Error loading image:', err);
+      }
     }
   });
 
   compressBtn.addEventListener('click', async () => {
-    if (!images.length) return;
-
     const targetSizeKB = parseInt(targetSizeInput.value);
     const format = formatSelect.value;
 
     if (isNaN(targetSizeKB) || targetSizeKB <= 0) {
-      errorMessage.textContent = 'Please enter a valid target size in KB.';
-      errorMessage.hidden = false;
+      showError('Please enter a valid target size in KB');
       return;
     }
 
-    errorMessage.hidden = true;
+    compressBtn.disabled = true;
+    zipDownloadBtn.disabled = true;
     loadingIndicator.hidden = false;
-    compressedPreview.innerHTML = '';
-    compressedPreview.style.display = 'grid';
+    compressedFiles = [];
 
-    const results = [];
+    const previews = previewContainer.querySelectorAll('.preview-container');
 
-    for (const [index, image] of images.entries()) {
-      const status = document.createElement('p');
-      status.textContent = `Processing ${image.name}...`;
-      compressedPreview.appendChild(status);
-
+    await Promise.all(images.map(async (file, i) => {
+      const preview = previews[i];
       try {
-        const { blob, url, dimensions } = await compressImageToTarget(image, targetSizeKB * 1024, format);
-        results.push({ blob, url, dimensions, original: image });
+        const { blob, url, dimensions } = await compressImageToTarget(
+          file,
+          targetSizeKB * 1024,
+          format
+        );
+        updatePreviewAfterCompression(preview, file, blob, url, dimensions, format);
 
-        const preview = document.createElement('div');
-        preview.style.border = '1px solid #ccc';
-        preview.style.padding = '8px';
-        preview.style.margin = '4px';
-        preview.style.textAlign = 'center';
-        preview.innerHTML = `
-          <img src="${url}" alt="Compressed Image" style="max-width: 150px; margin-bottom: 4px;" />
-          <p><strong>${image.name}</strong></p>
-          <p>${(blob.size / 1024).toFixed(1)} KB • ${dimensions.width}×${dimensions.height}px</p>
-          <p>↓ ${calculateReduction(image.size, blob.size)}%</p>
-        `;
-        compressedPreview.appendChild(preview);
-        compressedPreview.removeChild(status);
+        compressedFiles[i] = {
+          name: `compressed_${file.name.replace(/\.[^/.]+$/, '')}.${format}`,
+          blob
+        };
       } catch (err) {
-        console.warn(`Compression failed for ${image.name}:`, err);
-        errorMessage.textContent = `Error processing ${image.name}: ${err.message}`;
-        errorMessage.hidden = false;
+        updatePreviewWithError(preview, err.message);
+        compressedFiles[i] = null;
       }
-    }
+    }));
 
-    if (results.length > 0) {
-      downloadBtn.disabled = false;
-      downloadBtn.onclick = () => {
-        results.forEach(({ blob, original }, idx) => {
-          const a = document.createElement('a');
-          const objectURL = URL.createObjectURL(blob);
-          a.href = objectURL;
-          a.download = `compressed_${idx + 1}_${original.name.replace(/\.[^/.]+$/, '')}.${format}`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(objectURL), 2000);
-        });
-      };
-    } else {
-      downloadBtn.disabled = true;
+    loadingIndicator.hidden = true;
+    compressBtn.disabled = false;
+
+    // Enable ZIP download if at least one compressed file exists
+    if (compressedFiles.some(f => f !== null)) {
+      zipDownloadBtn.disabled = false;
+    }
+  });
+
+  zipDownloadBtn.addEventListener('click', async () => {
+    if (!compressedFiles.length) return;
+
+    zipDownloadBtn.disabled = true;
+    compressBtn.disabled = true;
+    loadingIndicator.hidden = false;
+
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder('compressed_images');
+
+      // Add files to zip
+      for (const file of compressedFiles) {
+        if (file) {
+          folder.file(file.name, file.blob);
+        }
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = zipUrl;
+      a.download = 'compressed_images.zip';
+      a.click();
+
+      URL.revokeObjectURL(zipUrl);
+    } catch (err) {
+      showError('Failed to generate ZIP: ' + err.message);
     }
 
     loadingIndicator.hidden = true;
+    zipDownloadBtn.disabled = false;
+    compressBtn.disabled = false;
   });
 
-  function displayOriginalImage(file) {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      originalImage.src = url;
-      originalDetails.innerHTML = `
-        <p><strong>Name:</strong> ${file.name}</p>
-        <p><strong>Type:</strong> ${file.type}</p>
-        <p><strong>Size:</strong> ${(file.size / 1024).toFixed(1)} KB</p>
-        <p><strong>Dimensions:</strong> ${img.width} × ${img.height} px</p>
-      `;
-      originalPreview.style.display = 'block';
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    };
-    img.src = url;
+  // --- Helper functions from previous version ---
+
+  function createPreviewElement(file, img, index) {
+    const preview = document.createElement('div');
+    preview.className = 'preview-container';
+    preview.dataset.index = index;
+
+    preview.innerHTML = `
+      <img src="${URL.createObjectURL(file)}" alt="Preview">
+      <div class="preview-details">
+        <p class="preview-filename">${file.name}</p>
+        <div class="preview-stats">
+          <span>${formatFileSize(file.size)}</span>
+          <span>${img.width}×${img.height}px</span>
+        </div>
+      </div>
+      <div class="preview-actions">
+        <button class="download-btn" disabled>
+          <i class="fas fa-download"></i> Download
+        </button>
+        <button class="remove-btn">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+      </div>
+    `;
+
+    preview.querySelector('.remove-btn').addEventListener('click', () => {
+      preview.remove();
+      const idx = parseInt(preview.dataset.index);
+      images.splice(idx, 1);
+      compressedFiles.splice(idx, 1);
+      updatePreviewIndexes();
+      compressBtn.disabled = images.length === 0;
+      zipDownloadBtn.disabled = true;
+    });
+
+    return preview;
   }
 
-  function loadImage(file) {
+  function updatePreviewAfterCompression(preview, originalFile, compressedBlob, url, dimensions, format) {
+    const downloadBtn = preview.querySelector('.download-btn');
+    const statsContainer = preview.querySelector('.preview-stats');
+
+    preview.querySelector('img').src = url;
+
+    statsContainer.innerHTML = `
+      <span>${formatFileSize(originalFile.size)} → ${formatFileSize(compressedBlob.size)}</span>
+      <span>${calculateReduction(originalFile.size, compressedBlob.size)}% smaller</span>
+      <span>${dimensions.width}×${dimensions.height}px</span>
+    `;
+
+    downloadBtn.disabled = false;
+    downloadBtn.onclick = () => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '')}.${format}`;
+      a.click();
+    };
+  }
+
+  function updatePreviewWithError(preview, errorMessage) {
+    const statsContainer = preview.querySelector('.preview-stats');
+    statsContainer.innerHTML = `<span style="color: var(--error-color)">Error: ${errorMessage}</span>`;
+  }
+
+  async function loadImage(file) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error('Invalid image format.'));
-        img.src = reader.result;
-      };
-      reader.onerror = () => reject(new Error('Failed to read file.'));
-      reader.readAsDataURL(file);
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
     });
   }
 
@@ -133,69 +193,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    const MAX_DIMENSION = 2000;
     let width = img.width;
     let height = img.height;
-
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
+    const MAX_DIM = 2000;
+    const scale = Math.min(1, MAX_DIM / Math.max(width, height));
     width = Math.round(width * scale);
     height = Math.round(height * scale);
 
-    let qualityMin = 0.3;
-    let qualityMax = 0.95;
-    let quality = qualityMax;
+    let qualityMin = 0.1, qualityMax = 0.9, quality = 0.7;
+    let blob = null, lastGoodBlob = null, lastGoodDims = { width, height };
 
-    let blob = null;
-    let lastGoodBlob = null;
-    let lastGoodDims = { width, height };
-    const mimeType = format === 'jpg' ? 'image/jpeg' : `image/${format}`;
-
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
       canvas.width = width;
       canvas.height = height;
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
-
-      blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, quality));
-      if (!blob) throw new Error('Compression failed.');
+      blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, quality));
+      if (!blob) throw new Error('Compression failed');
 
       if (blob.size <= targetBytes) {
         lastGoodBlob = blob;
         lastGoodDims = { width, height };
-        if (targetBytes - blob.size < 1024) break;
+        if (targetBytes - blob.size < targetBytes * 0.1) break;
         qualityMin = quality;
-        quality = (quality + qualityMax) / 2;
       } else {
         qualityMax = quality;
-        quality = (quality + qualityMin) / 2;
       }
+      quality = (qualityMin + qualityMax) / 2;
     }
 
+    // fallback: reduce dimension
     while (!lastGoodBlob && width > 100 && height > 100) {
-      width = Math.round(width * 0.95);
-      height = Math.round(height * 0.95);
-
+      width = Math.round(width * 0.9);
+      height = Math.round(height * 0.9);
       canvas.width = width;
       canvas.height = height;
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
-
-      blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, 0.85));
-      if (!blob) throw new Error('Failed to compress further.');
-
-      if (blob.size <= targetBytes) {
+      blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, 0.7));
+      if (blob && blob.size <= targetBytes) {
         lastGoodBlob = blob;
         lastGoodDims = { width, height };
         break;
       }
     }
 
-    if (!lastGoodBlob) throw new Error('Could not meet target size without degrading too much.');
+    if (!lastGoodBlob) throw new Error('Could not meet target size');
     const url = URL.createObjectURL(lastGoodBlob);
     return { blob: lastGoodBlob, url, dimensions: lastGoodDims };
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   function calculateReduction(originalSize, newSize) {
     return Math.round((1 - newSize / originalSize) * 100);
   }
+
+  function showError(message) {
+    const error = document.createElement('div');
+    error.className = 'error-message';
+    error.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
+    previewContainer.prepend(error);
+    setTimeout(() => error.remove(), 5000);
+  }
+
+  function updatePreviewIndexes() {
+    const previews = document.querySelectorAll('.preview-container');
+    previews.forEach((preview, index) => {
+      preview.dataset.index = index;
+    });
+  }
 });
+</script>
