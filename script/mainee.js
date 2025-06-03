@@ -142,46 +142,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function compressImageToTarget(file, targetBytes, format) {
+  async function compressImageToTarget(file, targetBytes, format = 'webp') {
   const img = await loadImage(file);
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d', { alpha: true });
+  const ctx = canvas.getContext('2d');
 
-  const MAX_DIM = 2000;
   let width = img.width;
   let height = img.height;
+
+  // Optional cap
+  const MAX_DIM = 2000;
   const scale = Math.min(1, MAX_DIM / Math.max(width, height));
   width = Math.round(width * scale);
   height = Math.round(height * scale);
 
-  let qualityMin = 0.1;
-  let qualityMax = 0.95;
-  let quality = 0.75;
   let bestBlob = null;
-  let bestDims = { width, height };
+  let bestQuality = 1.0;
+  let qualityMin = 0.6, qualityMax = 1.0;
+  const maxIterations = 10;
 
-  // Stage 1: Use WebP to find best quality/dimensions
-  for (let i = 0; i < 8; i++) {
-    canvas.width = width;
-    canvas.height = height;
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(img, 0, 0, width, height);
+  // Try at highest quality first
+  canvas.width = width;
+  canvas.height = height;
+  ctx.clearRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+  let initialBlob = await new Promise(res => canvas.toBlob(res, `image/${format}`, 1.0));
 
-    const testBlob = await new Promise(res => canvas.toBlob(res, 'image/webp', quality));
-    if (!testBlob) throw new Error('Initial WebP compression failed');
-
-    if (testBlob.size <= targetBytes) {
-      bestBlob = testBlob;
-      bestDims = { width, height };
-      if (targetBytes - testBlob.size < targetBytes * 0.05) break; // Within 5%
-      qualityMin = quality;
-    } else {
-      qualityMax = quality;
-    }
-    quality = (qualityMin + qualityMax) / 2;
+  if (!initialBlob) throw new Error('Compression failed');
+  if (initialBlob.size <= targetBytes) {
+    bestBlob = initialBlob;
   }
 
-  // Stage 2: If still too big, scale down dimensions
+  // If too large, apply binary search
+  if (!bestBlob) {
+    for (let i = 0; i < maxIterations; i++) {
+      let q = (qualityMin + qualityMax) / 2;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, q));
+      if (!blob) throw new Error('Compression failed');
+
+      if (blob.size <= targetBytes) {
+        bestBlob = blob;
+        bestQuality = q;
+        if (targetBytes - blob.size < targetBytes * 0.05) break;
+        qualityMin = q;
+      } else {
+        qualityMax = q;
+      }
+    }
+  }
+
+  // Fallback: shrink dimensions, but keep quality high
   while (!bestBlob && width > 100 && height > 100) {
     width = Math.round(width * 0.9);
     height = Math.round(height * 0.9);
@@ -189,28 +201,21 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.height = height;
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
-
-    const testBlob = await new Promise(res => canvas.toBlob(res, 'image/webp', 0.75));
-    if (testBlob.size <= targetBytes) {
-      bestBlob = testBlob;
-      bestDims = { width, height };
+    const blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, 0.9));
+    if (blob && blob.size <= targetBytes) {
+      bestBlob = blob;
       break;
     }
   }
 
-  if (!bestBlob) throw new Error('Unable to meet target size');
+  if (!bestBlob) throw new Error('Could not meet target size');
 
-  // Stage 3: Final export in requested format with matched quality
-  canvas.width = bestDims.width;
-  canvas.height = bestDims.height;
-  ctx.clearRect(0, 0, bestDims.width, bestDims.height);
-  ctx.drawImage(img, 0, 0, bestDims.width, bestDims.height);
-
-  const finalBlob = await new Promise(res => canvas.toBlob(res, `image/${format}`, quality));
-  if (!finalBlob) throw new Error('Final export failed');
-
-  const url = URL.createObjectURL(finalBlob);
-  return { blob: finalBlob, url, dimensions: bestDims };
+  return {
+    blob: bestBlob,
+    url: URL.createObjectURL(bestBlob),
+    dimensions: { width, height },
+    qualityUsed: bestQuality.toFixed(2)
+  };
 }
 
   function formatFileSize(bytes) {
