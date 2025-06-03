@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://reducepic.in/sitemap.xml
+# Replace https://reducepic.in/sitemap.xml with the actual site URL eventually
