@@ -1,56 +1,176 @@
-/* Updated CSS for Image Compressor Tool */
+/* Updated CSS with improvements */
+
+:root {
+  --primary-color: #4361ee;
+  --primary-dark: #3a56d4;
+  --secondary-color: #3f37c9;
+  --accent-color: #4895ef;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --gray-color: #6c757d;
+  --light-gray: #e9ecef;
+  --success-color: #4bb543;
+  --error-color: #ff3333;
+  --warning-color: #ffcc00;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+  --max-width: 1200px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px; /* Base font size */
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--dark-color);
+  background-color: #f5f7ff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: 2rem;
+}
+
+/* Typography */
+h1 {
+  font-size: 1.8rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.3rem;
+}
+h4 {
+  font-size: 1.1rem;
+}
+p, a, li, button, input, label {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+  h1 {
+    font-size: 1.6rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Layout */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Header */
+.header {
+  background-color: white;
+  box-shadow: var(--box-shadow);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Main Tool Section */
+.tool-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
 .compress-image {
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  padding: 1.5rem;
+  padding: 2rem;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .compress-image h1 {
   text-align: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   color: var(--primary-color);
-  font-size: 1.5rem;
 }
 
-/* Upload Container - Fully Clickable */
+/* Upload Area - Made fully clickable */
 .upload-container {
-  margin-bottom: 1.5rem;
-  position: relative;
+  margin-bottom: 2rem;
 }
 
 .upload-box {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   cursor: pointer;
   transition: var(--transition);
-  background-color: rgba(67, 97, 238, 0.03);
+  background-color: rgba(67, 97, 238, 0.05);
   position: relative;
 }
 
 .upload-box:hover {
-  background-color: rgba(67, 97, 238, 0.08);
+  background-color: rgba(67, 97, 238, 0.1);
+  transform: translateY(-3px);
+  box-shadow: var(--box-shadow-hover);
 }
 
-.upload-box i {
-  font-size: 1.75rem;
+.upload-box label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
   color: var(--primary-color);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .upload-box h3 {
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
 }
 
 .upload-box p {
-  font-size: 0.85rem;
   color: var(--gray-color);
+  margin-bottom: 0.5rem;
 }
 
 .upload-box p span {
@@ -58,158 +178,207 @@
   font-weight: 600;
 }
 
-#imageInput {
+.file-input {
   position: absolute;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 3;
 }
 
 .supported-formats {
-  font-size: 0.75rem;
-  color: var(--gray-color);
   text-align: center;
   margin-top: 0.5rem;
-}
-
-/* Compression Options - Horizontal Layout */
-.compression-options {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.compression-options label {
   font-size: 0.85rem;
-  font-weight: 600;
-  white-space: nowrap;
+  color: var(--gray-color);
 }
 
-.compression-options input {
-  padding: 0.5rem 0.75rem;
+/* Compression Options */
+.compression-options {
+  background-color: var(--light-gray);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.option-group {
+  margin-bottom: 1rem;
+}
+
+.option-group:last-child {
+  margin-bottom: 0;
+}
+
+.option-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.range-slider {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.range-value {
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--gray-color);
+}
+
+.format-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.format-option {
+  flex: 1;
+}
+
+.format-option input {
+  display: none;
+}
+
+.format-option label {
+  display: block;
+  padding: 0.75rem;
+  background-color: white;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
-  width: 100px;
   text-align: center;
-  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-#compressBtn {
-  padding: 0.5rem 1.25rem;
+.format-option input:checked + label {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Buttons */
+.btn-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--border-radius);
   font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
+  text-align: center;
+  box-shadow: var(--box-shadow);
   transition: var(--transition);
-  font-size: 0.85rem;
+  flex: 1;
 }
 
-#compressBtn:hover:not(:disabled) {
+.btn:hover {
   background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
 }
 
-#compressBtn:disabled {
+.btn-secondary {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--light-gray);
+}
+
+.btn:disabled {
   background-color: var(--gray-color);
   cursor: not-allowed;
-  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Ads Container - 4:3 Aspect Ratio */
+/* Ads Container - Separated between tool and preview */
 .ads-container {
   background-color: var(--light-gray);
   border-radius: var(--border-radius);
-  padding-bottom: 75%; /* 4:3 Aspect Ratio */
-  position: relative;
-  margin: 1.5rem 0;
+  padding: 1.5rem;
+  text-align: center;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--gray-color);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   box-shadow: var(--box-shadow);
-  overflow: hidden;
+  margin: 2rem 0;
 }
 
 .ads-container p {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  text-align: center;
-  padding: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* Preview Container */
-#previewContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.preview-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
+/* Preview Section - Separated with space */
+.preview-section {
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  position: relative;
+  padding: 2rem;
+  margin-top: 1rem;
+  scroll-margin-top: 20px;
 }
 
-.preview-item.compressing::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.7);
+.preview-section h2 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+#previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.preview-container {
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 0.75rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.75rem;
+  transition: var(--transition);
 }
 
-.preview-item.compressing::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(67, 97, 238, 0.2);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  z-index: 1;
+.preview-container:hover {
+  box-shadow: var(--box-shadow-hover);
 }
 
-.preview-image {
+.preview-container img {
   width: 50px;
   height: 50px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: calc(var(--border-radius) / 2);
   flex-shrink: 0;
 }
 
 .preview-details {
   flex: 1;
   min-width: 0;
+  font-size: 0.85rem;
 }
 
 .preview-filename {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,14 +388,14 @@
 .preview-stats {
   display: flex;
   gap: 0.75rem;
-  font-size: 0.75rem;
   color: var(--gray-color);
+  font-size: 0.8rem;
 }
 
 .preview-stats span {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .preview-actions {
@@ -235,15 +404,15 @@
 }
 
 .download-btn, .remove-btn {
-  padding: 0.35rem 0.6rem;
-  font-size: 0.7rem;
-  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: calc(var(--border-radius) / 2);
   border: none;
+  font-weight: 500;
+  transition: var(--transition);
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  cursor: pointer;
-  transition: var(--transition);
+  gap: 0.3rem;
 }
 
 .download-btn {
@@ -251,78 +420,179 @@
   color: white;
 }
 
+.download-btn:hover {
+  background-color: #3fa039;
+}
+
+.download-btn:disabled {
+  background-color: var(--gray-color);
+  cursor: not-allowed;
+}
+
 .remove-btn {
   background-color: var(--error-color);
   color: white;
 }
 
-/* Loading Indicators */
-#loadingIndicator {
-  display: none;
-  padding: 0.75rem;
-  text-align: center;
-  font-size: 0.85rem;
+.remove-btn:hover {
+  background-color: #e60000;
+}
+
+/* Compression Stats */
+.compression-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--light-gray);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.compression-stats div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.compression-stats i {
   color: var(--primary-color);
-  font-weight: 500;
+}
+
+/* Loading Indicator */
+#loadingIndicator {
+  text-align: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+#loadingIndicator p {
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(67, 97, 238, 0.2);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
+/* Error Message */
+.error-message {
+  background-color: #ffebee;
+  color: var(--error-color);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--error-color);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  display: none;
+}
+
+.error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: var(--error-color);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--light-gray);
+  color: var(--gray-color);
+  font-size: 0.9rem;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .compress-image {
-    padding: 1.25rem;
+  .container {
+    padding: 0 1rem;
   }
   
-  .compress-image h1 {
-    font-size: 1.3rem;
+  .compress-image, .preview-section {
+    padding: 1.5rem;
   }
   
   .upload-box {
-    padding: 1.5rem 1rem;
+    padding: 2rem 1rem;
   }
   
-  .upload-box i {
-    font-size: 1.5rem;
-  }
-  
-  .upload-box h3 {
-    font-size: 0.95rem;
-  }
-  
-  .upload-box p {
-    font-size: 0.8rem;
-  }
-  
-  .compression-options {
+  .format-options {
     flex-direction: column;
-    align-items: stretch;
     gap: 0.5rem;
   }
   
-  .compression-options input {
-    width: 100%;
+  .btn-group {
+    flex-direction: column;
   }
   
-  #compressBtn {
-    width: 100%;
+  .preview-container {
     padding: 0.6rem;
+    gap: 0.6rem;
   }
-  
-  .ads-container {
-    margin: 1rem 0;
-  }
-}
 
-@media (max-width: 480px) {
+  .preview-container img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .preview-details {
+    font-size: 0.8rem;
+  }
+
   .preview-stats {
     flex-direction: column;
     gap: 0.1rem;
+    font-size: 0.75rem;
   }
-  
+
   .preview-actions {
     flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .download-btn, .remove-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .compression-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .ads-container {
+    min-height: 80px;
+    padding: 1rem;
+    margin: 1.5rem 0;
   }
 }
