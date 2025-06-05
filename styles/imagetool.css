@@ -1,4 +1,4 @@
-/* Image Compression Tool - Compact Horizontal Layout */
+/* Updated CSS for Image Compressor Tool */
 .compress-image {
   background-color: white;
   border-radius: var(--border-radius);
@@ -11,20 +11,21 @@
 
 .compress-image h1 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   color: var(--primary-color);
   font-size: 1.5rem;
 }
 
-/* Upload Container */
+/* Upload Container - Fully Clickable */
 .upload-container {
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .upload-box {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
   cursor: pointer;
   transition: var(--transition);
@@ -37,9 +38,9 @@
 }
 
 .upload-box i {
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: var(--primary-color);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .upload-box h3 {
@@ -95,6 +96,7 @@
   border-radius: var(--border-radius);
   width: 100px;
   text-align: center;
+  font-size: 0.85rem;
 }
 
 #compressBtn {
@@ -107,6 +109,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: var(--transition);
+  font-size: 0.85rem;
 }
 
 #compressBtn:hover:not(:disabled) {
@@ -119,7 +122,33 @@
   opacity: 0.7;
 }
 
-/* Preview Container - Compact 40px Images */
+/* Ads Container - 4:3 Aspect Ratio */
+.ads-container {
+  background-color: var(--light-gray);
+  border-radius: var(--border-radius);
+  padding-bottom: 75%; /* 4:3 Aspect Ratio */
+  position: relative;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-color);
+  font-size: 0.85rem;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.ads-container p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Preview Container */
 #previewContainer {
   display: flex;
   flex-direction: column;
@@ -130,15 +159,44 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.75rem;
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
+  position: relative;
+}
+
+.preview-item.compressing::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-item.compressing::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(67, 97, 238, 0.2);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 1;
 }
 
 .preview-image {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
   border-radius: 4px;
   flex-shrink: 0;
@@ -155,6 +213,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
 }
 
 .preview-stats {
@@ -197,7 +256,7 @@
   color: white;
 }
 
-/* Loading Indicator */
+/* Loading Indicators */
 #loadingIndicator {
   display: none;
   padding: 0.75rem;
@@ -207,11 +266,40 @@
   font-weight: 500;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Responsive Adjustments */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .compress-image {
+    padding: 1.25rem;
+  }
+  
+  .compress-image h1 {
+    font-size: 1.3rem;
+  }
+  
+  .upload-box {
+    padding: 1.5rem 1rem;
+  }
+  
+  .upload-box i {
+    font-size: 1.5rem;
+  }
+  
+  .upload-box h3 {
+    font-size: 0.95rem;
+  }
+  
+  .upload-box p {
+    font-size: 0.8rem;
+  }
+  
   .compression-options {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.5rem;
   }
   
   .compression-options input {
@@ -220,5 +308,21 @@
   
   #compressBtn {
     width: 100%;
+    padding: 0.6rem;
+  }
+  
+  .ads-container {
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-stats {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  
+  .preview-actions {
+    flex-direction: column;
   }
 }
