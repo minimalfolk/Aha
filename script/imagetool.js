@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
   const targetSizeInput = document.getElementById('targetSize');
-  const formatSelect = document.getElementById('formatSelect');
   const preserveMetadata = document.getElementById('preserveMetadata');
   const batchDownloadBtn = document.getElementById('batchDownload');
   const loadingIndicator = document.getElementById('loadingIndicator');
@@ -13,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // State
   let images = [];
-  let compressedFiles = [];
-  const MAX_FILES = 20; // Good balance between usability and performance
 
   // Initialize
   batchDownloadBtn.disabled = true;
