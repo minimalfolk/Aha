@@ -17,10 +17,10 @@
   --transition: all 0.2s ease;
 }
 
-/* Base Container - Boxy White Design */
+/* Base Container */
 .compress-image {
   max-width: 800px;
-  margin: 2rem auto;
+  margin: 1.5rem auto;
   padding: 0;
   background: white;
   border-radius: var(--border-radius);
@@ -28,12 +28,21 @@
   overflow: hidden;
 }
 
+/* Header */
+.compress-image h1 {
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  padding: 0 1.5rem;
+}
+
 /* Section Containers */
 .upload-container,
 .compression-options,
 .preview-section {
   background: white;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   margin: 0;
   border-bottom: 1px solid var(--light-gray);
 }
@@ -43,118 +52,42 @@
   border-bottom: none;
 }
 
-/* Uploader Section */
-.upload-box {
-  border: 2px dashed var(--primary-color);
-  background-color: rgba(67, 97, 238, 0.03);
-  padding: 2rem;
-}
-
-/* Compression Options */
-.compression-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding: 1.5rem;
-}
-
-/* Ad Space - Plain white with minimum height */
-.ads-container {
-  background: white;
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gray-color);
-  border-bottom: 1px solid var(--light-gray);
-}
-
-.ads-container::before {
-  content: "Advertisement";
-  font-size: 0.75rem;
-  color: var(--gray-color);
-}
-
-/* Preview Section */
-#previewContainer {
-  gap: 1rem;
-  padding: 0 1.5rem 1.5rem;
-}
-
-.preview-container {
-  padding: 1rem;
-  border: 1px solid var(--light-gray);
-}
-
-/* Modern Loading Indicator */
-.preview-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 4px solid rgba(67, 97, 238, 0.1);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.loading-text {
-  font-size: 0.8rem;
-  color: var(--primary-color);
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.compress-image h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-}
-
-/* Fully Clickable Uploader */
+/* Uploader Section - Larger Clickable Area */
 .upload-container {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   cursor: pointer;
+  padding: 1.5rem;
 }
 
 .upload-box {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
   text-align: center;
   background-color: rgba(67, 97, 238, 0.03);
   position: relative;
+  transition: var(--transition);
+}
+
+.upload-box:hover {
+  background-color: rgba(67, 97, 238, 0.06);
 }
 
 .upload-box i {
-  font-size: 2rem;
+  font-size: 2.25rem;
   color: var(--primary-color);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .upload-box h3 {
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
 }
 
 .upload-box p {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--gray-color);
+  margin-bottom: 0.25rem;
 }
 
 .upload-box p span {
@@ -173,18 +106,18 @@
 }
 
 .supported-formats {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--gray-color);
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-/* Compact Compression Settings */
+/* Compression Options - Compact */
 .compression-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 1.25rem;
 }
 
 .option-row {
@@ -199,7 +132,7 @@
 }
 
 #formatSelect {
-  padding: 0.4rem 0.5rem;
+  padding: 0.5rem;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
   font-size: 0.85rem;
@@ -213,7 +146,7 @@
 }
 
 #targetSize {
-  padding: 0.4rem 0.5rem;
+  padding: 0.5rem;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
   font-size: 0.85rem;
@@ -221,15 +154,17 @@
 }
 
 #compressBtn {
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--border-radius);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  grid-column: span 2;
+  margin-top: 0.5rem;
 }
 
 #compressBtn:hover:not(:disabled) {
@@ -241,7 +176,29 @@
   cursor: not-allowed;
 }
 
-/* Preview Section */
+/* Larger Ad Space */
+.ads-container {
+  background: white;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-color);
+  border-bottom: 1px solid var(--light-gray);
+  position: relative;
+}
+
+.ads-container::before {
+  content: "Advertisement";
+  font-size: 0.8rem;
+  color: var(--gray-color);
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Preview Section - Wider */
 .preview-section {
   scroll-margin-top: 20px;
 }
@@ -250,7 +207,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 .preview-container {
@@ -262,6 +218,7 @@
   align-items: center;
   gap: 0.75rem;
   transition: var(--transition);
+  width: 100%;
 }
 
 .preview-container:hover {
@@ -312,8 +269,8 @@
 
 .download-btn,
 .remove-btn {
-  padding: 0.35rem 0.7rem;
-  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
   border-radius: calc(var(--border-radius) / 2);
   border: none;
   font-weight: 500;
@@ -323,7 +280,6 @@
   gap: 0.3rem;
 }
 
-/* Download Button */
 .download-btn {
   background-color: var(--success-color);
   color: white;
@@ -338,7 +294,6 @@
   cursor: not-allowed;
 }
 
-/* Remove Button */
 .remove-btn {
   background-color: var(--error-color);
   color: white;
@@ -356,61 +311,81 @@
   display: none;
 }
 
+/* Modern Loading Indicator */
+.preview-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid rgba(67, 97, 238, 0.1);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 600px) {
-  .compression-options {
-    grid-template-columns: 1fr;
+  .compress-image {
+    margin: 1rem auto;
   }
   
-  .compress-image {
+  .compression-options {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  
+  #compressBtn {
+    grid-column: span 1;
+  }
+  
+  .upload-container {
     padding: 1rem;
   }
   
   .upload-box {
-    padding: 1.5rem 1rem;
+    padding: 2rem 1rem;
   }
   
   .target-size-group {
     width: 100%;
   }
 
-   #targetSize {
+  #targetSize {
     flex: 1;
   }
 
   .preview-container {
-    padding: 0.6rem;
-    gap: 0.6rem;
-  }
-
-  .preview-container img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .preview-details {
-    font-size: 0.8rem;
+    padding: 0.75rem;
   }
 
   .preview-stats {
-    flex-direction: column;
-    gap: 0.1rem;
-    font-size: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .preview-actions {
     flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .download-btn, .remove-btn {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
-  }
-
-  .compression-stats {
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.85rem;
+    gap: 0.4rem;
   }
 }
