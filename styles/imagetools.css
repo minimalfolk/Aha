@@ -1,46 +1,77 @@
-/* Image Compression Tool Specific Styles */
+/* Root Variables */
+:root {
+  --primary-color: #4361ee;
+  --primary-dark: #3a56d4;
+  --secondary-color: #3f37c9;
+  --accent-color: #4895ef;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --gray-color: #6c757d;
+  --light-gray: #e9ecef;
+  --success-color: #4bb543;
+  --error-color: #ff3333;
+  --warning-color: #ffcc00;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease;
+}
+
+/* Base Container */
 .compress-image {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: white;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
 }
 
 .compress-image h1 {
   text-align: center;
-  margin-bottom: 2rem;
-  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--dark-color);
 }
 
+/* Uploader Section */
 .upload-container {
-  margin-bottom: 2.5rem;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--light-gray);
+  cursor: pointer;
+  transition: var(--transition);
   text-align: center;
 }
 
-.upload-box {
-  border: 2px dashed var(--light-gray);
-  border-radius: var(--border-radius);
-  padding: 3rem 2rem;
-  cursor: pointer;
-  transition: var(--transition);
-  margin-bottom: 1rem;
+.upload-container:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--box-shadow-hover);
 }
 
-.upload-box:hover {
-  border-color: var(--primary-color);
-  background-color: rgba(67, 97, 238, 0.05);
+.upload-box {
+  padding: 1.5rem;
+  position: relative;
 }
 
 .upload-box i {
-  font-size: 3rem;
+  font-size: 2rem;
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .upload-box h3 {
+  font-size: 1.1rem;
   margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+
+.upload-box p {
+  font-size: 0.9rem;
+  color: var(--gray-color);
 }
 
 .upload-box p span {
@@ -49,146 +80,170 @@
   text-decoration: underline;
 }
 
-.upload-box input[type="file"] {
-  display: none;
+#imageInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 
-.supported-formats p {
-  font-size: var(--font-sm);
+.supported-formats {
+  font-size: 0.75rem;
   color: var(--gray-color);
+  margin-top: 0.75rem;
 }
 
 /* Compression Options */
 .compression-options {
-  background-color: var(--light-color);
-  padding: 1.5rem;
+  background: white;
   border-radius: var(--border-radius);
-  margin-bottom: 2rem;
+  box-shadow: var(--box-shadow);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--light-gray);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
 }
 
 .option-row {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.option-row:last-child {
-  margin-bottom: 0;
+  gap: 0.75rem;
 }
 
 .option-row label {
-  font-weight: 600;
-  min-width: 120px;
+  font-size: 0.9rem;
+  color: var(--dark-color);
+  min-width: 100px;
 }
 
-.option-row select,
-.option-row input[type="number"] {
-  padding: 0.5rem 1rem;
+#formatSelect,
+#targetSize {
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
+  font-size: 0.9rem;
   flex: 1;
-  max-width: 200px;
+  background: white;
+}
+
+.target-size-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 #compressBtn {
-  padding: 0.5rem 1.5rem;
-  margin-left: auto;
+  padding: 0.5rem 1.25rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--border-radius);
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  width: 100%;
 }
 
-#compressBtn:hover {
+#compressBtn:hover:not(:disabled) {
   background-color: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
 #compressBtn:disabled {
-  background-color: var(--gray-color);
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* Loading Indicator */
-#loadingIndicator {
-  text-align: center;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  display: none;
+/* Preview Section */
+.preview-section {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.25rem;
+  border: 1px solid var(--light-gray);
 }
 
-#loadingText {
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-/* Preview Container */
 #previewContainer {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.preview-card {
   display: flex;
   flex-direction: column;
-  background-color: var(--light-color);
-  border-radius: var(--border-radius);
-  padding: 1rem;
-  box-shadow: var(--box-shadow);
+  gap: 0.75rem;
 }
 
-.preview-image-container {
+.preview-container {
+  position: relative;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 0.75rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  transition: var(--transition);
+  border: 1px solid var(--light-gray);
 }
 
-.preview-thumbnail {
+.preview-container:hover {
+  box-shadow: var(--box-shadow-hover);
+  border-color: var(--primary-color);
+}
+
+.preview-container img {
   width: 50px;
   height: 50px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: calc(var(--border-radius) / 2);
+  flex-shrink: 0;
 }
 
 .preview-details {
   flex: 1;
+  min-width: 0;
 }
 
-.preview-details p {
-  font-size: var(--font-sm);
-  margin-bottom: 0.25rem;
-}
-
-.preview-details .file-name {
+.preview-filename {
   font-weight: 600;
-  color: var(--dark-color);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.preview-details .file-stats {
+.preview-stats {
+  display: flex;
+  gap: 1rem;
   color: var(--gray-color);
-  font-size: var(--font-xs);
+  font-size: 0.8rem;
+}
+
+.preview-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .preview-actions {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
 }
 
-.preview-actions button {
-  padding: 0.25rem 0.75rem;
-  font-size: var(--font-xs);
+.download-btn,
+.remove-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: calc(var(--border-radius) / 2);
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  font-weight: 500;
   transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .download-btn {
@@ -209,122 +264,118 @@
   background-color: #e60000;
 }
 
-/* Ads Container */
-.ads-container {
-  margin: 2rem 0;
-  padding: 1rem;
-  background-color: var(--light-gray);
-  border-radius: var(--border-radius);
-  text-align: center;
-  min-height: 90px;
+/* New Loading Circle Design */
+.preview-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+.preview-loading-spinner {
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+
+.preview-loading-spinner::before,
+.preview-loading-spinner::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.preview-loading-spinner::before {
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(67, 97, 238, 0.1);
+}
+
+.preview-loading-spinner::after {
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top-color: var(--primary-color);
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 8px rgba(67, 97, 238, 0.2);
+}
+
+.preview-loading-text {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Progress Indicator */
+.preview-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--light-gray);
+  border-radius: 2px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.preview-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
   .compress-image {
-    padding: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .compression-options {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .option-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.5rem;
   }
   
-  .option-row select,
-  .option-row input[type="number"] {
-    max-width: 100%;
-    width: 100%;
+  .option-row label {
+    min-width: auto;
   }
   
-  #compressBtn {
-    width: 100%;
-    margin-left: 0;
-    margin-top: 0.5rem;
-  }
-  
-  .preview-image-container {
+  .preview-container {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
   }
-}
-
-/* Add these styles to your existing CSS */
-
-/* Loading Circle Styles */
-.loading-circle {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(67, 97, 238, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--primary-color);
-  animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-text {
-  display: inline-flex;
-  align-items: center;
-  font-size: var(--font-sm);
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-/* Updated Preview Card Styles */
-.preview-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.preview-card.loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.preview-card.loading .preview-actions {
-  visibility: hidden;
-}
-
-/* Compression Progress Indicator */
-.compression-progress {
-  display: flex;
-  align-items: center;
-  margin-top: 0.5rem;
-}
-
-.progress-bar {
-  flex-grow: 1;
-  height: 6px;
-  background-color: var(--light-gray);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-right: 0.5rem;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--primary-color);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-.progress-percent {
-  font-size: var(--font-xs);
-  color: var(--gray-color);
-  min-width: 40px;
-  text-align: right;
-}
+  
+  .preview-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .preview-stats {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .preview-loading-spinner {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .preview-loading-text {
+    font-size: 0.7rem;
+  }
+    }
