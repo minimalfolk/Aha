@@ -59,59 +59,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const previews = previewContainer.querySelectorAll('.preview-container');
 
     for (let i = 0; i < images.length; i++) {
-  const file = images[i];
-  const preview = previews[i];
-  const loadingEl = preview.querySelector('.preview-loading');
-  loadingEl.hidden = false; // Show loading
+      const file = images[i];
+      const preview = previews[i];
+      const loadingEl = preview.querySelector('.preview-loading');
+      loadingEl.hidden = false;
 
-  try {
-    const { blob, url, dimensions } = await compressImageToTarget(
-      file,
-      targetSizeKB * 1024,
-      'jpeg'
-    );
+      try {
+        const { blob, url, dimensions } = await compressImageToTarget(
+          file,
+          targetSizeKB * 1024,
+          'jpeg'
+        );
 
-    updatePreviewAfterCompression(
-      preview,
-      file,
-      blob,
-      url,
-      dimensions
-    );
-  } catch (err) {
-    updatePreviewWithError(preview, err.message);
-  }
+        updatePreviewAfterCompression(preview, file, blob, url, dimensions);
+      } catch (err) {
+        updatePreviewWithError(preview, err.message);
+      }
 
-  loadingEl.hidden = true; // Hide loading
+      loadingEl.hidden = true;
+    }
+
+    loadingIndicator.hidden = true;
     compressBtn.disabled = false;
   });
 
   // Helper functions
   function createPreviewElement(file, img) {
     const preview = document.createElement('div');
-preview.className = 'preview-container';
+    preview.className = 'preview-container';
 
-preview.innerHTML = `
-  <img src="${URL.createObjectURL(file)}" alt="Preview">
-  <div class="preview-details">
-    <p class="preview-filename">${file.name}</p>
-    <div class="preview-stats">
-      <span>${formatFileSize(file.size)}</span>
-      <span>${img.width}×${img.height}px</span>
-    </div>
-  </div>
-  <div class="preview-loading" hidden>
-    <span class="spinner"></span> Compressing...
-  </div>
-  <div class="preview-actions">
-    <button class="download-btn" disabled>
-      <i class="fas fa-download"></i> Download
-    </button>
-    <button class="remove-btn">
-      <i class="fas fa-trash"></i> Remove
-    </button>
-  </div>
-`;
+    preview.innerHTML = `
+      <img src="${URL.createObjectURL(file)}" alt="Preview">
+      <div class="preview-details">
+        <p class="preview-filename">${file.name}</p>
+        <div class="preview-stats">
+          <span>${formatFileSize(file.size)}</span>
+          <span>${img.width}×${img.height}px</span>
+        </div>
+      </div>
+      <div class="preview-loading" hidden>
+        <span class="spinner"></span> Compressing...
+      </div>
+      <div class="preview-actions">
+        <button class="download-btn" disabled>
+          <i class="fas fa-download"></i> Download
+        </button>
+        <button class="remove-btn">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+      </div>
+    `;
 
     preview.querySelector('.remove-btn').addEventListener('click', () => {
       preview.remove();
@@ -206,7 +203,6 @@ preview.innerHTML = `
       }
     }
 
-    // If still too big, reduce dimensions
     while (!bestBlob && width > 100 && height > 100) {
       width = Math.round(width * 0.9);
       height = Math.round(height * 0.9);
