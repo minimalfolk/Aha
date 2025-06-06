@@ -2,35 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
   const targetSizeInput = document.getElementById('targetSize');
+  const uploadBox = document.getElementById('uploadBox');
   const loadingIndicator = document.getElementById('loadingIndicator');
   const previewContainer = document.getElementById('previewContainer');
-  const uploadBox = document.getElementById('uploadBox');
 
   let images = [];
 
-  // Handle drag and drop
-  uploadBox.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadBox.classList.add('dragover');
-  });
-
-  uploadBox.addEventListener('dragleave', () => {
-    uploadBox.classList.remove('dragover');
-  });
-
-  uploadBox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadBox.classList.remove('dragover');
-    if (e.dataTransfer.files.length) {
-      imageInput.files = e.dataTransfer.files;
-      const event = new Event('change');
-      imageInput.dispatchEvent(event);
-    }
-  });
-
   // Handle file selection
   imageInput.addEventListener('change', async (e) => {
-    images = Array.from(e.target.files).slice(0, 15); // Limit to 15 files
+    images = Array.from(e.target.files);
     compressBtn.disabled = images.length === 0;
     previewContainer.innerHTML = '';
 
@@ -47,12 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Handle drag and drop
+  uploadBox.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadBox.classList.add('dragover');
+  });
+
+  uploadBox.addEventListener('dragleave', () => {
+    uploadBox.classList.remove('dragover');
+  });
+
+  uploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadBox.classList.remove('dragover');
+    imageInput.files = e.dataTransfer.files;
+    imageInput.dispatchEvent(new Event('change'));
+  });
+
   // Handle compression
   compressBtn.addEventListener('click', async () => {
     const targetSizeKB = parseInt(targetSizeInput.value);
 
     if (isNaN(targetSizeKB) || targetSizeKB <= 0) {
-      showError('Please enter a valid target size in KB');
+      alert('Please enter a valid target size in KB');
       return;
     }
 
@@ -66,32 +63,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const preview = previews[i];
       
       try {
-        // Get original format
-        const originalFormat = file.type.split('/')[1] || 'webp';
-        const formatToUse = originalFormat.toLowerCase() === 'gif' ? 'gif' : 'webp';
-        
         const { blob, url, dimensions } = await compressImageToTarget(
           file, 
-          targetSizeKB * 1024, 
-          formatToUse
+          targetSizeKB * 1024
         );
-
-        // Convert back to original format if needed (except GIFs)
-        let finalBlob = blob;
-        let finalFormat = formatToUse;
-        
-        if (formatToUse === 'webp' && originalFormat !== 'gif') {
-          finalBlob = await convertToOriginalFormat(blob, originalFormat);
-          finalFormat = originalFormat;
-        }
 
         updatePreviewAfterCompression(
           preview,
           file,
-          finalBlob,
-          URL.createObjectURL(finalBlob),
-          dimensions,
-          finalFormat
+          blob,
+          url,
+          dimensions
         );
       } catch (err) {
         updatePreviewWithError(preview, err.message);
@@ -129,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add remove functionality
     preview.querySelector('.remove-btn').addEventListener('click', () => {
       preview.remove();
-      images = images.filter((_, index) => index !== Array.from(previewContainer.querySelectorAll('.preview-container')).indexOf(preview));
+      images = images.filter((_, index) => index !== Array.from(previews).indexOf(preview));
       if (images.length === 0) compressBtn.disabled = true;
     });
 
     return preview;
   }
 
-  function updatePreviewAfterCompression(preview, originalFile, compressedBlob, url, dimensions, format) {
+  function updatePreviewAfterCompression(preview, originalFile, compressedBlob, url, dimensions) {
     const downloadBtn = preview.querySelector('.download-btn');
     const statsContainer = preview.querySelector('.preview-stats');
     
@@ -155,14 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadBtn.onclick = () => {
       const a = document.createElement('a');
       a.href = url;
-      a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '')}.${format}`;
+      a.download = `compressed_${originalFile.name}`;
       a.click();
     };
   }
 
   function updatePreviewWithError(preview, errorMessage) {
     const statsContainer = preview.querySelector('.preview-stats');
-    statsContainer.innerHTML = `<span style="color: var(--error-color)">Error: ${errorMessage}</span>`;
+    statsContainer.innerHTML = `<span style="color: red">Error: ${errorMessage}</span>`;
   }
 
   async function loadImage(file) {
@@ -174,23 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function convertToOriginalFormat(blob, targetFormat) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob((convertedBlob) => {
-          resolve(convertedBlob);
-        }, `image/${targetFormat}`, 0.92); // High quality conversion
-      };
-      img.src = URL.createObjectURL(blob);
-    });
-  }
-
   async function compressImageToTarget(file, targetBytes, format = 'webp') {
     const img = await loadImage(file);
     const canvas = document.createElement('canvas');
@@ -199,33 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let width = img.width;
     let height = img.height;
 
-    // For GIFs, we'll use a different approach
-    if (format === 'gif') {
-      // Simple approach for GIFs - just resize without compression
-      const MAX_DIM = 1000;
-      const scale = Math.min(1, MAX_DIM / Math.max(width, height));
-      width = Math.round(width * scale);
-      height = Math.round(height * scale);
-      
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      const blob = await new Promise(resolve => {
-        canvas.toBlob(resolve, 'image/gif');
-      });
-      
-      if (!blob) throw new Error('GIF processing failed');
-      
-      return {
-        blob,
-        url: URL.createObjectURL(blob),
-        dimensions: { width, height },
-        qualityUsed: 1.0
-      };
-    }
-
-    // For other formats, use WebP with quality adjustment
+    // Optional cap
     const MAX_DIM = 2000;
     const scale = Math.min(1, MAX_DIM / Math.max(width, height));
     width = Math.round(width * scale);
@@ -233,68 +172,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let bestBlob = null;
     let bestQuality = 1.0;
-    let qualityMin = 0.7, qualityMax = 1.0; // Start with higher minimum quality
-    const maxIterations = 8; // Fewer iterations for performance
+    let qualityMin = 0.6, qualityMax = 1.0;
+    const maxIterations = 10;
 
+    // Try at highest quality first
     canvas.width = width;
     canvas.height = height;
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
+    let initialBlob = await new Promise(res => canvas.toBlob(res, `image/${format}`, 1.0));
 
-    // First try with high quality
-    let blob = await new Promise(resolve => 
-      canvas.toBlob(resolve, 'image/webp', 0.9)
-    );
-    
-    if (blob && blob.size <= targetBytes) {
-      bestBlob = blob;
-      bestQuality = 0.9;
+    if (!initialBlob) throw new Error('Compression failed');
+    if (initialBlob.size <= targetBytes) {
+      bestBlob = initialBlob;
     }
 
-    // Binary search for optimal quality
+    // If too large, apply binary search
     if (!bestBlob) {
       for (let i = 0; i < maxIterations; i++) {
-        const quality = (qualityMin + qualityMax) / 2;
+        let q = (qualityMin + qualityMax) / 2;
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
-        
-        blob = await new Promise(resolve => 
-          canvas.toBlob(resolve, 'image/webp', quality)
-        );
-        
-        if (!blob) break;
+        const blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, q));
+        if (!blob) throw new Error('Compression failed');
 
         if (blob.size <= targetBytes) {
           bestBlob = blob;
-          bestQuality = quality;
-          qualityMin = quality; // Try higher quality
+          bestQuality = q;
+          if (targetBytes - blob.size < targetBytes * 0.05) break;
+          qualityMin = q;
         } else {
-          qualityMax = quality; // Try lower quality
+          qualityMax = q;
         }
-        
-        // Early exit if we're close enough
-        if (Math.abs(blob.size - targetBytes) < targetBytes * 0.1) break;
       }
     }
 
-    // Final fallback - resize further if needed
-    if (!bestBlob) {
-      while (width > 100 && height > 100) {
-        width = Math.round(width * 0.9);
-        height = Math.round(height * 0.9);
-        canvas.width = width;
-        canvas.height = height;
-        ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        blob = await new Promise(resolve => 
-          canvas.toBlob(resolve, 'image/webp', 0.8)
-        );
-        
-        if (blob && blob.size <= targetBytes) {
-          bestBlob = blob;
-          break;
-        }
+    // Fallback: shrink dimensions, but keep quality high
+    while (!bestBlob && width > 100 && height > 100) {
+      width = Math.round(width * 0.9);
+      height = Math.round(height * 0.9);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const blob = await new Promise(res => canvas.toBlob(res, `image/${format}`, 0.9));
+      if (blob && blob.size <= targetBytes) {
+        bestBlob = blob;
+        break;
       }
     }
 
@@ -316,16 +240,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateReduction(originalSize, newSize) {
     return Math.round((1 - newSize / originalSize) * 100);
-  }
-
-  function showError(message) {
-    const error = document.createElement('div');
-    error.className = 'error-message';
-    error.innerHTML = `
-      <i class="fas fa-exclamation-circle"></i>
-      <span>${message}</span>
-    `;
-    previewContainer.prepend(error);
-    setTimeout(() => error.remove(), 5000);
   }
 });
