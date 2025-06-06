@@ -61,22 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < images.length; i++) {
       const file = images[i];
       const preview = previews[i];
-      const loadingEl = preview.querySelector('.preview-loading');
-      loadingEl.hidden = false;
 
       try {
         const { blob, url, dimensions } = await compressImageToTarget(
           file,
           targetSizeKB * 1024,
-          'jpeg'
+          'jpeg' // Always output JPEG
         );
 
         updatePreviewAfterCompression(preview, file, blob, url, dimensions);
       } catch (err) {
         updatePreviewWithError(preview, err.message);
       }
-
-      loadingEl.hidden = true;
     }
 
     loadingIndicator.hidden = true;
@@ -96,9 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>${formatFileSize(file.size)}</span>
           <span>${img.width}×${img.height}px</span>
         </div>
-      </div>
-      <div class="preview-loading" hidden>
-        <span class="spinner"></span> Compressing...
       </div>
       <div class="preview-actions">
         <button class="download-btn" disabled>
@@ -203,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // If still too big, reduce dimensions
     while (!bestBlob && width > 100 && height > 100) {
       width = Math.round(width * 0.9);
       height = Math.round(height * 0.9);
