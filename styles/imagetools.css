@@ -1,6 +1,5 @@
 /* Root Variables */
 :root {
-  --primary-color: #4361ee;
   --primary-dark: #3a56d4;
   --secondary-color: #3f37c9;
   --accent-color: #4895ef;
@@ -14,7 +13,198 @@
   --border-radius: 8px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --transition: all 0.2s ease;
+  --primary-color: #4361ee;
+  --primary-light: rgba(67, 97, 238, 0.15);
+  --text-dark: #2a2a2a;
+  --text-light: #6c757d;
+  --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Main Container */
+.upload-section {
+  position: relative;
+  max-width: 500px;
+  margin: 2rem auto;
+  perspective: 1000px;
+}
+
+/* Floating Particles Background */
+.floating-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.floating-particles::before {
+  content: "";
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  top: -100%;
+  left: -100%;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--primary-light) 0%, transparent 20%),
+    radial-gradient(circle at 80% 70%, var(--primary-light) 0%, transparent 20%),
+    radial-gradient(circle at 40% 60%, var(--primary-light) 0%, transparent 20%);
+  animation: float 25s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Upload Container */
+.upload-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+  transition: var(--transition);
+  transform-style: preserve-3d;
+}
+
+.upload-container:hover {
+  transform: translateY(-5px) scale(1.005);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+/* Upload Box */
+.upload-box {
+  position: relative;
+  border: 2px dashed var(--primary-color);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.upload-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(67, 97, 238, 0.05) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(67, 97, 238, 0.05) 100%
+  );
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Upload Icon */
+.upload-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.5rem;
+  color: var(--primary-color);
+  animation: gentleBounce 3s ease-in-out infinite;
+}
+
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.upload-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.5;
+}
+
+/* Text Styles */
+.upload-title {
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.upload-subtext {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-bottom: 0;
+}
+
+.browse-text {
+  color: var(--primary-color);
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+}
+
+.browse-text::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary-color);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.browse-text:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* File Input */
+#imageInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Supported Formats */
+.supported-formats {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 1.25rem;
+  letter-spacing: 0.3px;
+}
+
+/* Active State */
+.upload-box.active {
+  border-color: #00c896;
+  background-color: rgba(0, 200, 150, 0.03);
+}
+
+/* Drag Over State */
+.upload-box.drag-over {
+  animation: pulse 1.5s infinite;
+  border-color: var(--primary-color);
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.2); }
+  50% { box-shadow: 0 0 0 15px rgba(67, 97, 238, 0); }
 }
 
 /* Base Container */
