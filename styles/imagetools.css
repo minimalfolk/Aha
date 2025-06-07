@@ -590,3 +590,43 @@
     font-size: 0.85rem;
   }
 }
+/* Particle Animation */
+@keyframes particle-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.upload-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+  bottom: 20px;
+}
+
+/* Success State */
+.upload-success {
+  animation: success-pulse 1s ease;
+  border-color: #00c896 !important;
+}
+
+@keyframes success-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.4); }
+  50% { box-shadow: 0 0 0 15px rgba(0, 200, 150, 0); }
+}
+
+/* Drag Over State */
+.drag-over {
+  animation: border-pulse 1.5s infinite;
+}
+
+@keyframes border-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.2); }
+  50% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+}
