@@ -1,81 +1,68 @@
+// Optimized and fixed image compression script
+
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM Elements
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
   const targetSizeInput = document.getElementById('targetSize');
   const uploadBox = document.getElementById('uploadBox');
   const loadingIndicator = document.getElementById('loadingIndicator');
-  const loadingText = document.getElementById('loadingText');
   const previewContainer = document.getElementById('previewContainer');
-  const formatSelect = document.getElementById('formatSelect');
 
-  // Configuration
-  const MAX_PARALLEL = 3; // Maximum parallel image processing
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB max file size
-  const MAX_DIMENSION = 4000; // Max width/height for canvas
-  const DEFAULT_TARGET_SIZE = 100; // Default target size in KB
-
-  // State management
   let images = [];
   let previewMap = new Map(); // Maps file to its preview DOM
-  let processingCount = 0;
 
-  // Event Listeners
-  imageInput.addEventListener('change', handleFileInput);
-  uploadBox.addEventListener('dragover', handleDragOver);
-  uploadBox.addEventListener('dragleave', handleDragLeave);
-  uploadBox.addEventListener('drop', handleDrop);
-  compressBtn.addEventListener('click', startCompression);
-
-  // Main Functions
-  async function handleFileInput(e) {
-    cleanup(); // Clear previous files
-    
-    images = Array.from(e.target.files)
-      .filter(f => f.type.startsWith('image/'))
-      .filter(f => f.size <= MAX_FILE_SIZE)
-      .slice(0, 20);
-
-    if (e.target.files.length !== images.length) {
-      alert('Some files were removed (non-images, too large, or exceeded 20 file limit)');
-    }
-
+  imageInput.addEventListener('change', async (e) => {
+    images = Array.from(e.target.files).filter(f => f.type.startsWith('image/')).slice(0, 20);
     compressBtn.disabled = images.length === 0;
-    updateProgress(0, images.length);
+    previewContainer.innerHTML = '';
+    previewMap.clear();
 
-    // Process images in batches to prevent UI freeze
-    for (let i = 0; i < images.length; i += MAX_PARALLEL) {
-      const batch = images.slice(i, i + MAX_PARALLEL);
-      await Promise.all(batch.map(processPreview));
-      updateProgress(Math.min(i + MAX_PARALLEL, images.length), images.length);
+    for (const file of images) {
+      try {
+        const img = await loadImage(file);
+        const preview = createPreviewElement(file, img);
+        previewContainer.appendChild(preview);
+        previewMap.set(file, preview);
+      } catch (err) {
+        console.error('Error loading image:', err);
+      }
     }
-  }
+  });
 
-  async function processPreview(file) {
-    try {
-      const img = await loadImage(file);
-      const preview = createPreviewElement(file, img);
-      previewContainer.appendChild(preview);
-      previewMap.set(file, preview);
-    } catch (err) {
-      console.error('Error loading image:', err);
-      createErrorPreview(file, err.message);
+  uploadBox.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadBox.classList.add('dragover');
+  });
+
+  uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+
+  uploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadBox.classList.remove('dragover');
+    imageInput.files = e.dataTransfer.files;
+    imageInput.dispatchEvent(new Event('change'));
+  });
+
+  compressBtn.addEventListener('click', async () => {
+    const targetSizeKB = parseInt(targetSizeInput.value);
+    if (isNaN(targetSizeKB) || targetSizeKB <= 0) return alert('Enter valid target size in KB');
+
+    loadingIndicator.hidden = false;
+    compressBtn.disabled = true;
+
+    for (const file of images) {
+      const preview = previewMap.get(file);
+      try {
+        const { blob, url, dimensions } = await compressImageToTarget(file, targetSizeKB * 1024, 'jpeg');
+        updatePreviewAfterCompression(preview, file, blob, url, dimensions);
+      } catch (err) {
+        updatePreviewWithError(preview, err.message);
+      }
     }
-  }
 
-  function createErrorPreview(file, errorMessage) {
-    const preview = document.createElement('div');
-    preview.className = 'preview-container error';
-    preview.innerHTML = `
-      <div class="preview-details">
-        <p class="preview-filename">${file.name}</p>
-        <div class="preview-stats">
-          <span style="color: red">Error: ${errorMessage}</span>
-        </div>
-      </div>
-    `;
-    previewContainer.appendChild(preview);
-  }
+    loadingIndicator.hidden = true;
+    compressBtn.disabled = false;
+  });
 
   function createPreviewElement(file, img) {
     const preview = document.createElement('div');
@@ -84,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const objectUrl = URL.createObjectURL(file);
 
     preview.innerHTML = `
-      <img src="${objectUrl}" alt="Preview" loading="lazy">
+      <img src="${objectUrl}" alt="Preview">
       <div class="preview-details">
         <p class="preview-filename">${file.name}</p>
         <div class="preview-stats">
@@ -93,12 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
       <div class="preview-actions">
-        <button class="download-btn" disabled>
-          <i class="fas fa-download"></i> Download
-        </button>
-        <button class="remove-btn">
-          <i class="fas fa-trash"></i> Remove
-        </button>
+        <button class="download-btn" disabled><i class="fas fa-download"></i> Download</button>
+        <button class="remove-btn"><i class="fas fa-trash"></i> Remove</button>
       </div>
     `;
 
@@ -107,77 +90,28 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.remove();
       images = images.filter(i => i !== file);
       previewMap.delete(file);
-      compressBtn.disabled = images.length === 0;
+      if (images.length === 0) compressBtn.disabled = true;
     });
 
     return preview;
   }
 
-  async function startCompression() {
-    const targetSizeKB = parseInt(targetSizeInput.value) || DEFAULT_TARGET_SIZE;
-    if (targetSizeKB <= 0) {
-      alert('Please enter a valid target size in KB');
-      return;
-    }
-
-    const outputFormat = formatSelect.value;
-    loadingIndicator.hidden = false;
-    loadingText.textContent = 'Processing images...';
-    compressBtn.disabled = true;
-
-    updateProgress(0, images.length);
-
-    // Process images in parallel batches
-    for (let i = 0; i < images.length; i += MAX_PARALLEL) {
-      const batch = images.slice(i, i + MAX_PARALLEL);
-      await Promise.all(batch.map(file => processImage(file, targetSizeKB * 1024, outputFormat)));
-      updateProgress(i + batch.length, images.length);
-    }
-
-    loadingIndicator.hidden = true;
-    compressBtn.disabled = false;
-  }
-
-  async function processImage(file, targetBytes, outputFormat) {
-    const preview = previewMap.get(file);
-    if (!preview) return;
-
-    try {
-      processingCount++;
-      const { blob, url, dimensions } = await compressImageToTarget(file, targetBytes, outputFormat);
-      updatePreviewAfterCompression(preview, file, blob, url, dimensions, outputFormat);
-    } catch (err) {
-      updatePreviewWithError(preview, err.message);
-    } finally {
-      processingCount--;
-    }
-  }
-
-  function updatePreviewAfterCompression(preview, originalFile, blob, url, dimensions, outputFormat) {
+  function updatePreviewAfterCompression(preview, originalFile, blob, url, dimensions) {
     const downloadBtn = preview.querySelector('.download-btn');
     const statsContainer = preview.querySelector('.preview-stats');
 
-    // Revoke previous object URL if exists
-    const prevImg = preview.querySelector('img');
-    if (prevImg.src.startsWith('blob:')) {
-      URL.revokeObjectURL(prevImg.src);
-    }
-    prevImg.src = url;
-
+    preview.querySelector('img').src = url;
     statsContainer.innerHTML = `
-      <span>${formatFileSize(originalFile.size)} → <strong>${formatFileSize(blob.size)}</strong></span>
-      <span style="color: ${blob.size < originalFile.size ? 'green' : 'red'}">
-        ${calculateReduction(originalFile.size, blob.size)}% ${blob.size < originalFile.size ? 'smaller' : 'larger'}
-      </span>
+      <span>${formatFileSize(originalFile.size)} → ${formatFileSize(blob.size)}</span>
+      <span>${calculateReduction(originalFile.size, blob.size)}% smaller</span>
       <span>${dimensions.width}×${dimensions.height}px</span>
     `;
 
     downloadBtn.disabled = false;
     downloadBtn.onclick = () => {
-      const ext = outputFormat === 'jpeg' ? 'jpg' : outputFormat;
       const a = document.createElement('a');
       a.href = url;
-      a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '')}.${ext}`;
+      a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '.jpg')}`;
       a.click();
     };
   }
@@ -187,61 +121,18 @@ document.addEventListener('DOMContentLoaded', () => {
     statsContainer.innerHTML = `<span style="color: red">Error: ${errorMessage}</span>`;
   }
 
-  // Drag and Drop Handlers
-  function handleDragOver(e) {
-    e.preventDefault();
-    uploadBox.classList.add('dragover');
-  }
-
-  function handleDragLeave() {
-    uploadBox.classList.remove('dragover');
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    uploadBox.classList.remove('dragover');
-    imageInput.files = e.dataTransfer.files;
-    imageInput.dispatchEvent(new Event('change'));
-  }
-
-  // Progress Tracking
-  function updateProgress(processed, total) {
-    if (total > 0) {
-      loadingText.textContent = `Processing ${processed} of ${total} images (${Math.round((processed/total)*100)}%)`;
-    }
-  }
-
-  // Cleanup Function
-  function cleanup() {
-    // Clean up object URLs
-    previewMap.forEach((preview, file) => {
-      const img = preview.querySelector('img');
-      if (img && img.src.startsWith('blob:')) {
-        URL.revokeObjectURL(img.src);
-      }
-    });
-    
-    previewMap.clear();
-    images = [];
-    previewContainer.innerHTML = '';
-  }
-
-  // Image Processing Functions
   async function loadImage(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
       const img = new Image();
-      
       img.onload = () => {
         URL.revokeObjectURL(url);
         resolve(img);
       };
-      
       img.onerror = () => {
         URL.revokeObjectURL(url);
         reject(new Error('Failed to load image'));
       };
-      
       img.src = url;
     });
   }
@@ -251,10 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Calculate scaled dimensions
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
-    let width = Math.round(img.width * scale);
-    let height = Math.round(img.height * scale);
+    let width = img.width;
+    let height = img.height;
+    const MAX_DIM = 4000;
+    const scale = Math.min(1, MAX_DIM / Math.max(width, height));
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
 
     canvas.width = width;
     canvas.height = height;
@@ -264,13 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let bestBlob = null;
     let qualityMin = 0.01, qualityMax = 1.0;
     const maxIterations = 20;
-    const tolerance = 0.03; // 3% tolerance for target size
 
-    const tryBlob = (q) => new Promise(resolve => {
-      canvas.toBlob(blob => resolve(blob), `image/${outputFormat}`, q);
-    });
+    const tryBlob = (q) => new Promise(res => canvas.toBlob(res, `image/${outputFormat}`, q));
 
-    // Binary search for optimal quality
     for (let i = 0; i < maxIterations; i++) {
       const q = (qualityMin + qualityMax) / 2;
       const blob = await tryBlob(q);
@@ -279,20 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (blob.size <= targetBytes) {
         bestBlob = blob;
         qualityMin = q;
-        if ((targetBytes - blob.size) < targetBytes * tolerance) break;
+        if (targetBytes - blob.size < targetBytes * 0.03) break;
       } else {
         qualityMax = q;
       }
     }
 
-    // Fallback to best found if we didn't hit target
-    if (!bestBlob) {
-      const fallbackBlob = await tryBlob(qualityMin);
-      if (!fallbackBlob) {
-        throw new Error('Compression failed. Try increasing target size.');
-      }
-      bestBlob = fallbackBlob;
-    }
+    if (!bestBlob) throw new Error('Cannot compress below target size. Try increasing target size.');
 
     return {
       blob: bestBlob,
@@ -301,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Utility Functions
   function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
