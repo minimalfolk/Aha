@@ -1,91 +1,103 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // DOM Elements
   const imageInput = document.getElementById('imageInput');
   const compressBtn = document.getElementById('compressBtn');
   const targetSizeInput = document.getElementById('targetSize');
   const uploadBox = document.getElementById('uploadBox');
   const loadingIndicator = document.getElementById('loadingIndicator');
   const previewContainer = document.getElementById('previewContainer');
+  const formatSelect = document.createElement('select');
+  const batchDownloadBtn = document.createElement('button');
+  const progressInfo = document.createElement('div');
+  const MAX_PARALLEL = 3; // Maximum parallel image processing
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB max file size
+  const MAX_DIMENSION = 4000; // Max width/height for canvas
+
+  // UI Setup
+  formatSelect.innerHTML = `
+    <option value="jpeg">JPEG</option>
+    <option value="png">PNG</option>
+    <option value="webp">WebP</option>
+  `;
+  formatSelect.className = 'format-select';
+  uploadBox.parentNode.insertBefore(formatSelect, compressBtn);
+
+  batchDownloadBtn.textContent = 'Download All';
+  batchDownloadBtn.className = 'batch-download-btn';
+  batchDownloadBtn.disabled = true;
+  previewContainer.parentNode.insertBefore(batchDownloadBtn, previewContainer.nextSibling);
+
+  progressInfo.className = 'progress-info';
+  previewContainer.parentNode.insertBefore(progressInfo, previewContainer);
 
   let images = [];
+  let previewMap = new Map(); // Maps file to its preview DOM
+  let processingCount = 0;
 
-  // Handle file selection
-  imageInput.addEventListener('change', async (e) => {
-    images = Array.from(e.target.files);
+  // Event Listeners
+  imageInput.addEventListener('change', handleFileInput);
+  uploadBox.addEventListener('dragover', handleDragOver);
+  uploadBox.addEventListener('dragleave', handleDragLeave);
+  uploadBox.addEventListener('drop', handleDrop);
+  compressBtn.addEventListener('click', startCompression);
+  batchDownloadBtn.addEventListener('click', handleBatchDownload);
+
+  // Functions
+  async function handleFileInput(e) {
+    cleanup(); // Clear previous files
+    
+    images = Array.from(e.target.files)
+      .filter(f => f.type.startsWith('image/'))
+      .filter(f => f.size <= MAX_FILE_SIZE)
+      .slice(0, 20);
+
+    if (e.target.files.length !== images.length) {
+      alert('Some files were removed (non-images, too large, or exceeded 20 file limit)');
+    }
+
     compressBtn.disabled = images.length === 0;
-    previewContainer.innerHTML = '';
+    batchDownloadBtn.disabled = true;
+    updateProgress(0, images.length);
 
-    for (const file of images) {
-      if (!file.type.startsWith('image/')) continue;
-
-      try {
-        const img = await loadImage(file);
-        const preview = createPreviewElement(file, img);
-        previewContainer.appendChild(preview);
-      } catch (err) {
-        console.error('Error loading image:', err);
-      }
+    // Process images in batches to prevent UI freeze
+    for (let i = 0; i < images.length; i += MAX_PARALLEL) {
+      const batch = images.slice(i, i + MAX_PARALLEL);
+      await Promise.all(batch.map(processPreview));
+      updateProgress(Math.min(i + MAX_PARALLEL, images.length), images.length);
     }
-  });
+  }
 
-  // Handle drag and drop
-  uploadBox.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadBox.classList.add('dragover');
-  });
-
-  uploadBox.addEventListener('dragleave', () => {
-    uploadBox.classList.remove('dragover');
-  });
-
-  uploadBox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadBox.classList.remove('dragover');
-    imageInput.files = e.dataTransfer.files;
-    imageInput.dispatchEvent(new Event('change'));
-  });
-
-  // Handle compression
-  compressBtn.addEventListener('click', async () => {
-    const targetSizeKB = parseInt(targetSizeInput.value);
-
-    if (isNaN(targetSizeKB) || targetSizeKB <= 0) {
-      alert('Please enter a valid target size in KB');
-      return;
+  async function processPreview(file) {
+    try {
+      const img = await loadImage(file);
+      const preview = createPreviewElement(file, img);
+      previewContainer.appendChild(preview);
+      previewMap.set(file, preview);
+    } catch (err) {
+      console.error('Error loading image:', err);
+      // Create error preview
+      const preview = document.createElement('div');
+      preview.className = 'preview-container error';
+      preview.innerHTML = `
+        <div class="preview-details">
+          <p class="preview-filename">${file.name}</p>
+          <div class="preview-stats">
+            <span style="color: red">Error: ${err.message}</span>
+          </div>
+        </div>
+      `;
+      previewContainer.appendChild(preview);
     }
+  }
 
-    loadingIndicator.hidden = false;
-    compressBtn.disabled = true;
-
-    const previews = previewContainer.querySelectorAll('.preview-container');
-
-    for (let i = 0; i < images.length; i++) {
-      const file = images[i];
-      const preview = previews[i];
-
-      try {
-        const { blob, url, dimensions } = await compressImageToTarget(
-          file,
-          targetSizeKB * 1024,
-          'jpeg' // Always output JPEG
-        );
-
-        updatePreviewAfterCompression(preview, file, blob, url, dimensions);
-      } catch (err) {
-        updatePreviewWithError(preview, err.message);
-      }
-    }
-
-    loadingIndicator.hidden = true;
-    compressBtn.disabled = false;
-  });
-
-  // Helper functions
   function createPreviewElement(file, img) {
     const preview = document.createElement('div');
     preview.className = 'preview-container';
 
+    const objectUrl = URL.createObjectURL(file);
+
     preview.innerHTML = `
-      <img src="${URL.createObjectURL(file)}" alt="Preview">
+      <img src="${objectUrl}" alt="Preview" loading="lazy">
       <div class="preview-details">
         <p class="preview-filename">${file.name}</p>
         <div class="preview-stats">
@@ -94,44 +106,95 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
       <div class="preview-actions">
-        <button class="download-btn" disabled>
-          <i class="fas fa-download"></i> Download
-        </button>
-        <button class="remove-btn">
-          <i class="fas fa-trash"></i> Remove
-        </button>
+        <button class="download-btn" disabled><i class="fas fa-download"></i> Download</button>
+        <button class="remove-btn"><i class="fas fa-trash"></i> Remove</button>
       </div>
     `;
 
     preview.querySelector('.remove-btn').addEventListener('click', () => {
+      URL.revokeObjectURL(objectUrl);
       preview.remove();
-      const index = Array.from(previewContainer.children).indexOf(preview);
-      images.splice(index, 1);
-      if (images.length === 0) compressBtn.disabled = true;
+      images = images.filter(i => i !== file);
+      previewMap.delete(file);
+      compressBtn.disabled = images.length === 0;
+      batchDownloadBtn.disabled = document.querySelectorAll('.download-btn:not([disabled])').length === 0;
     });
 
     return preview;
   }
 
-  function updatePreviewAfterCompression(preview, originalFile, compressedBlob, url, dimensions) {
+  async function startCompression() {
+    const targetSizeKB = parseInt(targetSizeInput.value);
+    if (isNaN(targetSizeKB) || targetSizeKB <= 0) {
+      alert('Please enter a valid target size in KB');
+      return;
+    }
+
+    const outputFormat = formatSelect.value;
+    loadingIndicator.hidden = false;
+    compressBtn.disabled = true;
+    batchDownloadBtn.disabled = true;
+    processingCount = 0;
+
+    // Process images in parallel batches
+    for (let i = 0; i < images.length; i += MAX_PARALLEL) {
+      const batch = images.slice(i, i + MAX_PARALLEL);
+      await Promise.all(batch.map(file => processImage(file, targetSizeKB * 1024, outputFormat)));
+      updateProgress(i + batch.length, images.length);
+    }
+
+    loadingIndicator.hidden = true;
+    compressBtn.disabled = false;
+    batchDownloadBtn.disabled = document.querySelectorAll('.download-btn:not([disabled])').length === 0;
+  }
+
+  async function processImage(file, targetBytes, outputFormat) {
+    const preview = previewMap.get(file);
+    if (!preview) return;
+
+    try {
+      processingCount++;
+      const { blob, url, dimensions } = await compressImageToTarget(file, targetBytes, outputFormat);
+      updatePreviewAfterCompression(preview, file, blob, url, dimensions);
+    } catch (err) {
+      updatePreviewWithError(preview, err.message);
+    } finally {
+      processingCount--;
+    }
+  }
+
+  function updatePreviewAfterCompression(preview, originalFile, blob, url, dimensions) {
     const downloadBtn = preview.querySelector('.download-btn');
     const statsContainer = preview.querySelector('.preview-stats');
 
-    preview.querySelector('img').src = url;
+    // Revoke previous object URL if exists
+    const prevImg = preview.querySelector('img');
+    if (prevImg.src.startsWith('blob:')) {
+      URL.revokeObjectURL(prevImg.src);
+    }
+    prevImg.src = url;
 
     statsContainer.innerHTML = `
-      <span>${formatFileSize(originalFile.size)} → ${formatFileSize(compressedBlob.size)}</span>
-      <span>${calculateReduction(originalFile.size, compressedBlob.size)}% smaller</span>
+      <span>${formatFileSize(originalFile.size)} → <strong>${formatFileSize(blob.size)}</strong></span>
+      <span style="color: ${blob.size < originalFile.size ? 'green' : 'red'}">
+        ${calculateReduction(originalFile.size, blob.size)}% ${blob.size < originalFile.size ? 'smaller' : 'larger'}
+      </span>
       <span>${dimensions.width}×${dimensions.height}px</span>
     `;
 
     downloadBtn.disabled = false;
     downloadBtn.onclick = () => {
+      const ext = outputFormat === 'jpeg' ? 'jpg' : outputFormat;
       const a = document.createElement('a');
       a.href = url;
-      a.download = `compressed_${originalFile.name.replace(/\.\w+$/, '.jpg')}`;
+      a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '')}.${ext}`;
       a.click();
     };
+
+    // Enable batch download if any file is ready
+    if (document.querySelectorAll('.download-btn:not([disabled])').length > 0) {
+      batchDownloadBtn.disabled = false;
+    }
   }
 
   function updatePreviewWithError(preview, errorMessage) {
@@ -139,12 +202,66 @@ document.addEventListener('DOMContentLoaded', () => {
     statsContainer.innerHTML = `<span style="color: red">Error: ${errorMessage}</span>`;
   }
 
+  function handleDragOver(e) {
+    e.preventDefault();
+    uploadBox.classList.add('dragover');
+  }
+
+  function handleDragLeave() {
+    uploadBox.classList.remove('dragover');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    uploadBox.classList.remove('dragover');
+    imageInput.files = e.dataTransfer.files;
+    imageInput.dispatchEvent(new Event('change'));
+  }
+
+  function handleBatchDownload() {
+    document.querySelectorAll('.download-btn:not([disabled])').forEach(btn => {
+      setTimeout(() => btn.click(), 100); // Small delay to prevent browser blocking
+    });
+  }
+
+  function updateProgress(processed, total) {
+    progressInfo.textContent = `Processed ${processed} of ${total} images`;
+    if (processed >= total) {
+      setTimeout(() => progressInfo.textContent = '', 3000);
+    }
+  }
+
+  function cleanup() {
+    // Clean up object URLs
+    previewMap.forEach((preview, file) => {
+      const img = preview.querySelector('img');
+      if (img && img.src.startsWith('blob:')) {
+        URL.revokeObjectURL(img.src);
+      }
+    });
+    
+    previewMap.clear();
+    images = [];
+    previewContainer.innerHTML = '';
+  }
+
+  // Image processing functions
   async function loadImage(file) {
     return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
       const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = URL.createObjectURL(file);
+      
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = url;
     });
   }
 
@@ -153,82 +270,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    let width = img.width;
-    let height = img.height;
-
-    const MAX_DIM = 2000;
-    const scale = Math.min(1, MAX_DIM / Math.max(width, height));
-    width = Math.round(width * scale);
-    height = Math.round(height * scale);
+    // Calculate scaled dimensions
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
+    const width = Math.round(img.width * scale);
+    const height = Math.round(img.height * scale);
 
     canvas.width = width;
     canvas.height = height;
-
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
 
     let bestBlob = null;
-    let bestQuality = 1.0;
-    let qualityMin = 0.4, qualityMax = 1.0;
-    const maxIterations = 10;
+    let qualityMin = 0.01, qualityMax = 1.0;
+    const maxIterations = 20;
+    const tolerance = 0.03; // 3% tolerance for target size
 
-    const tryBlob = async (q) =>
-      await new Promise((res) => canvas.toBlob(res, `image/${outputFormat}`, q));
+    const tryBlob = (q) => new Promise(resolve => {
+      canvas.toBlob(blob => resolve(blob), `image/${outputFormat}`, q);
+    });
 
-    const initialBlob = await tryBlob(1.0);
-    if (!initialBlob) throw new Error('Initial compression failed');
-    if (initialBlob.size <= targetBytes) bestBlob = initialBlob;
+    // Binary search for optimal quality
+    for (let i = 0; i < maxIterations; i++) {
+      const q = (qualityMin + qualityMax) / 2;
+      const blob = await tryBlob(q);
+      if (!blob) continue;
 
-    if (!bestBlob) {
-      for (let i = 0; i < maxIterations; i++) {
-        const q = (qualityMin + qualityMax) / 2;
-        const blob = await tryBlob(q);
-        if (!blob) throw new Error('Binary search compression failed');
-
-        if (blob.size <= targetBytes) {
-          bestBlob = blob;
-          bestQuality = q;
-          if (targetBytes - blob.size < targetBytes * 0.05) break;
-          qualityMin = q;
-        } else {
-          qualityMax = q;
-        }
-      }
-    }
-
-    // If still too big, reduce dimensions
-    while (!bestBlob && width > 100 && height > 100) {
-      width = Math.round(width * 0.9);
-      height = Math.round(height * 0.9);
-      canvas.width = width;
-      canvas.height = height;
-      ctx.clearRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, width, height);
-      const blob = await tryBlob(0.9);
-      if (blob && blob.size <= targetBytes) {
+      if (blob.size <= targetBytes) {
         bestBlob = blob;
-        bestQuality = 0.9;
-        break;
+        qualityMin = q;
+        if ((targetBytes - blob.size) < targetBytes * tolerance) break;
+      } else {
+        qualityMax = q;
       }
     }
 
-    if (!bestBlob) throw new Error('Could not meet target size');
+    // Fallback to best found if we didn't hit target
+    if (!bestBlob) {
+      const fallbackBlob = await tryBlob(qualityMin);
+      if (!fallbackBlob) {
+        throw new Error('Compression failed. Try increasing target size.');
+      }
+      bestBlob = fallbackBlob;
+    }
 
     return {
       blob: bestBlob,
       url: URL.createObjectURL(bestBlob),
-      dimensions: { width, height },
-      qualityUsed: bestQuality.toFixed(2)
+      dimensions: { width, height }
     };
   }
 
+  // Utility functions
   function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
-  function calculateReduction(originalSize, newSize) {
-    return Math.round((1 - newSize / originalSize) * 100);
+  function calculateReduction(original, reduced) {
+    return Math.round((1 - reduced / original) * 100);
   }
 });
