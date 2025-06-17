@@ -5,31 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const targetSizeInput = document.getElementById('targetSize');
   const uploadBox = document.getElementById('uploadBox');
   const loadingIndicator = document.getElementById('loadingIndicator');
+  const loadingText = document.getElementById('loadingText');
   const previewContainer = document.getElementById('previewContainer');
-  const formatSelect = document.createElement('select');
-  const batchDownloadBtn = document.createElement('button');
-  const progressInfo = document.createElement('div');
+  const formatSelect = document.getElementById('formatSelect');
+
+  // Configuration
   const MAX_PARALLEL = 3; // Maximum parallel image processing
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB max file size
   const MAX_DIMENSION = 4000; // Max width/height for canvas
+  const DEFAULT_TARGET_SIZE = 100; // Default target size in KB
 
-  // UI Setup
-  formatSelect.innerHTML = `
-    <option value="jpeg">JPEG</option>
-    <option value="png">PNG</option>
-    <option value="webp">WebP</option>
-  `;
-  formatSelect.className = 'format-select';
-  uploadBox.parentNode.insertBefore(formatSelect, compressBtn);
-
-  batchDownloadBtn.textContent = 'Download All';
-  batchDownloadBtn.className = 'batch-download-btn';
-  batchDownloadBtn.disabled = true;
-  previewContainer.parentNode.insertBefore(batchDownloadBtn, previewContainer.nextSibling);
-
-  progressInfo.className = 'progress-info';
-  previewContainer.parentNode.insertBefore(progressInfo, previewContainer);
-
+  // State management
   let images = [];
   let previewMap = new Map(); // Maps file to its preview DOM
   let processingCount = 0;
@@ -40,9 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
   uploadBox.addEventListener('dragleave', handleDragLeave);
   uploadBox.addEventListener('drop', handleDrop);
   compressBtn.addEventListener('click', startCompression);
-  batchDownloadBtn.addEventListener('click', handleBatchDownload);
 
-  // Functions
+  // Main Functions
   async function handleFileInput(e) {
     cleanup(); // Clear previous files
     
@@ -56,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     compressBtn.disabled = images.length === 0;
-    batchDownloadBtn.disabled = true;
     updateProgress(0, images.length);
 
     // Process images in batches to prevent UI freeze
@@ -75,19 +59,22 @@ document.addEventListener('DOMContentLoaded', () => {
       previewMap.set(file, preview);
     } catch (err) {
       console.error('Error loading image:', err);
-      // Create error preview
-      const preview = document.createElement('div');
-      preview.className = 'preview-container error';
-      preview.innerHTML = `
-        <div class="preview-details">
-          <p class="preview-filename">${file.name}</p>
-          <div class="preview-stats">
-            <span style="color: red">Error: ${err.message}</span>
-          </div>
-        </div>
-      `;
-      previewContainer.appendChild(preview);
+      createErrorPreview(file, err.message);
     }
+  }
+
+  function createErrorPreview(file, errorMessage) {
+    const preview = document.createElement('div');
+    preview.className = 'preview-container error';
+    preview.innerHTML = `
+      <div class="preview-details">
+        <p class="preview-filename">${file.name}</p>
+        <div class="preview-stats">
+          <span style="color: red">Error: ${errorMessage}</span>
+        </div>
+      </div>
+    `;
+    previewContainer.appendChild(preview);
   }
 
   function createPreviewElement(file, img) {
@@ -106,8 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
       <div class="preview-actions">
-        <button class="download-btn" disabled><i class="fas fa-download"></i> Download</button>
-        <button class="remove-btn"><i class="fas fa-trash"></i> Remove</button>
+        <button class="download-btn" disabled>
+          <i class="fas fa-download"></i> Download
+        </button>
+        <button class="remove-btn">
+          <i class="fas fa-trash"></i> Remove
+        </button>
       </div>
     `;
 
@@ -117,24 +108,24 @@ document.addEventListener('DOMContentLoaded', () => {
       images = images.filter(i => i !== file);
       previewMap.delete(file);
       compressBtn.disabled = images.length === 0;
-      batchDownloadBtn.disabled = document.querySelectorAll('.download-btn:not([disabled])').length === 0;
     });
 
     return preview;
   }
 
   async function startCompression() {
-    const targetSizeKB = parseInt(targetSizeInput.value);
-    if (isNaN(targetSizeKB) || targetSizeKB <= 0) {
+    const targetSizeKB = parseInt(targetSizeInput.value) || DEFAULT_TARGET_SIZE;
+    if (targetSizeKB <= 0) {
       alert('Please enter a valid target size in KB');
       return;
     }
 
     const outputFormat = formatSelect.value;
     loadingIndicator.hidden = false;
+    loadingText.textContent = 'Processing images...';
     compressBtn.disabled = true;
-    batchDownloadBtn.disabled = true;
-    processingCount = 0;
+
+    updateProgress(0, images.length);
 
     // Process images in parallel batches
     for (let i = 0; i < images.length; i += MAX_PARALLEL) {
@@ -145,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadingIndicator.hidden = true;
     compressBtn.disabled = false;
-    batchDownloadBtn.disabled = document.querySelectorAll('.download-btn:not([disabled])').length === 0;
   }
 
   async function processImage(file, targetBytes, outputFormat) {
@@ -155,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       processingCount++;
       const { blob, url, dimensions } = await compressImageToTarget(file, targetBytes, outputFormat);
-      updatePreviewAfterCompression(preview, file, blob, url, dimensions);
+      updatePreviewAfterCompression(preview, file, blob, url, dimensions, outputFormat);
     } catch (err) {
       updatePreviewWithError(preview, err.message);
     } finally {
@@ -163,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function updatePreviewAfterCompression(preview, originalFile, blob, url, dimensions) {
+  function updatePreviewAfterCompression(preview, originalFile, blob, url, dimensions, outputFormat) {
     const downloadBtn = preview.querySelector('.download-btn');
     const statsContainer = preview.querySelector('.preview-stats');
 
@@ -190,11 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
       a.download = `compressed_${originalFile.name.replace(/\.[^/.]+$/, '')}.${ext}`;
       a.click();
     };
-
-    // Enable batch download if any file is ready
-    if (document.querySelectorAll('.download-btn:not([disabled])').length > 0) {
-      batchDownloadBtn.disabled = false;
-    }
   }
 
   function updatePreviewWithError(preview, errorMessage) {
@@ -202,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     statsContainer.innerHTML = `<span style="color: red">Error: ${errorMessage}</span>`;
   }
 
+  // Drag and Drop Handlers
   function handleDragOver(e) {
     e.preventDefault();
     uploadBox.classList.add('dragover');
@@ -218,19 +204,14 @@ document.addEventListener('DOMContentLoaded', () => {
     imageInput.dispatchEvent(new Event('change'));
   }
 
-  function handleBatchDownload() {
-    document.querySelectorAll('.download-btn:not([disabled])').forEach(btn => {
-      setTimeout(() => btn.click(), 100); // Small delay to prevent browser blocking
-    });
-  }
-
+  // Progress Tracking
   function updateProgress(processed, total) {
-    progressInfo.textContent = `Processed ${processed} of ${total} images`;
-    if (processed >= total) {
-      setTimeout(() => progressInfo.textContent = '', 3000);
+    if (total > 0) {
+      loadingText.textContent = `Processing ${processed} of ${total} images (${Math.round((processed/total)*100)}%)`;
     }
   }
 
+  // Cleanup Function
   function cleanup() {
     // Clean up object URLs
     previewMap.forEach((preview, file) => {
@@ -245,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     previewContainer.innerHTML = '';
   }
 
-  // Image processing functions
+  // Image Processing Functions
   async function loadImage(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
@@ -272,8 +253,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Calculate scaled dimensions
     const scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
-    const width = Math.round(img.width * scale);
-    const height = Math.round(img.height * scale);
+    let width = Math.round(img.width * scale);
+    let height = Math.round(img.height * scale);
 
     canvas.width = width;
     canvas.height = height;
@@ -320,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Utility functions
+  // Utility Functions
   function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
