@@ -1,0 +1,312 @@
+    <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+        
+<title>Reduce Image Size In KB | Pi7 Image Reducer</title>
+<link rel="canonical" href="https://image.pi7.org/reduce-image-size-in-kb" />
+<meta name="description" content="Reduce image size in KB for government portals, job applications, college admissions, and more with Pi7 Image Reducer. Compress photos while maintaining quality.">
+<meta name="author" content="Pi7 Image Tool" />
+
+        <meta name="theme-color" content="#4449A6" />
+        <link rel="apple-touch-icon" href="/static/manifest/icon-192x192.png">
+        <meta name="yandex-verification" content="77ac3ed02bde032b" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/static/img/fav/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="/static/img/fav/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/static/img/fav/favicon-16x16.png">
+        <link rel="manifest" href="/static/manifest/manifest.json">
+        <link rel="stylesheet" href="/static/css/style.css?v=230">
+        <link rel="preconnect" href="https://imback.pi7.org" />
+    </head>
+    <body>
+        <nav>
+            <a href="/">
+              <div class="logodiv">
+                <img height="40px" width="70px" alt="Pi7 Image Tool Logo" src="/static/img/svgicons/pi7.svg">
+                <b> IMAGE TOOL</b>
+              </div>
+            </a>
+            <div class="mencontainer" onclick="tooglemenu(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+              </div>
+            <div class="navlinks">
+                <ul>
+                    <li class='mobshowonly'>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/merge-pdf">Merge PDF's</a>
+                    </li>
+                    <li>
+                        <a class="trackbtn" href="/resize-image-pixel">Resize Image Pixel</a>
+                    </li>
+                    <li>
+                        <a class="trackbtn" href="/passport-size-photo">Passport Size Photo</a>
+                    </li>
+                    <li class='mobshowonly'>
+                        <a href="/increase-image-size-in-kb">Increase Image Size In KB</a>
+                    </li>
+                    <li class='mobshowonly'>
+                        <a href="/remove-image-background">Remove Image Background</a>
+                    </li>
+                    <li class='mobshowonly'>
+                        <a href="/convert-dpi">Convert DPI (200,300,600)</a>
+                    </li>
+                    <li class='mobshowonly'>
+                        <a href="https://pdf.pi7.org/pdf-to-jpg">PDF To Images</a>
+                    </li>
+                    <li class="dropdownbar">
+                        <a href="#">Convert Image <i class="arrow down"></i></a>
+                        <div class="insildenavdiv">
+                            <a class="trackbtn" href="/png-to-jpeg"> <i class="arrow right"></i> PNG to JPEG</a>
+                            <a class="trackbtn" href="/heic-to-jpg"><i class="arrow right"></i> HEIC To JPG</a>
+                            <a class="trackbtn" href="/image-to-pdf"><i class="arrow right"></i> Images To PDF</a>
+                            <a class="trackbtn" href="/jpg-to-pdf-under-100kb"><i class="arrow right"></i> JPG to PDF Under 100KB</a>
+                            <a class="trackbtn" href="/jpg-to-pdf-under-500kb"><i class="arrow right"></i> JPG to PDF Under 500KB</a>
+                            <a class="trackbtn" href="/jpg-to-text"> <i class="arrow right"></i> JPG to Text</a>
+                            <a class="trackbtn" href="/jpeg-to-png"> <i class="arrow right"></i> JPEG to PNG</a>
+                            <a class="trackbtn" href="/webp-to-jpg"> <i class="arrow right"></i> WEBP to JPG</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="trackbtn" href="/reduce-image-size-in-kb">Compress Image</a>
+                    </li>
+                    <li class="dropdownbar">
+                        <a href="#">Compress PDF <i class="arrow down"></i></a>
+                        <div class="insildenavdiv">
+                            <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/increase-pdf-size"> <i class="arrow right"></i> Increase PDF Size</a>
+                            <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/compress-pdf-to-50kb"> <i class="arrow right"></i> Compress PDF to 50KB</a>
+                            <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/compress-pdf-to-100kb"> <i class="arrow right"></i> Compress PDF to 100KB</a>
+                            <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/compress-pdf-to-200kb"> <i class="arrow right"></i> Compress PDF to 200KB</a>
+                            <a class="trackbtn" target="_blank" href="https://pdf.pi7.org/compress-pdf-to-500kb"> <i class="arrow right"></i> Compress PDF to 500KB</a>
+                        </div>          
+                    </li>
+                    <li>
+                        <a class="trackbtn" href="/crop-image">Crop Image</a>
+                    </li>      
+                </ul>
+            </div>
+        </nav>
+        
+        <div class="mainsec">
+            <div class="maincont">
+                <h1>Reduce Image Size In KB</h1>
+                <p class="headsupport">Compress an image to 20kb, 50kb, 100KB, 200KB, or any other size.</p>
+                <input accept="image/*,.heic,.heif" id="files" multiple="" name="files[]" type="file">
+                <label for="files" class="imagelabel">
+                    <output id="Filelist"></output>
+                    <div class="respons_div">
+                        <center>
+                            <p class="notext">Select Or Drag & Drop Images Here</p>
+                            <b class="btnsel notext">Select Images</b>
+                        </center>
+                    </div>
+                </label>
+                <div>
+                    <center>
+                        <div class="bottomcont">
+                    <div id="otherbuttons">
+                        <label class="labelkb" for="kbid">Size:</label>
+                        <input id="kbid" name="kbsize" type="number" value="100" >
+                        <span class="kbinput">Kb</span>
+                        <button class="compressbtn" id="submit-button" onclick="uploadFile()" type="submit">Reduce Size</button>
+                        <br>
+                        <p class="tiptext">Note:- You Can Compress 10 Images At Once</p>
+                    </div>
+                </div>
+                </center>
+                <section class="articlesec">
+                  
+        <div id="adswithloader" class="artiad">
+            <div class="adconttaim">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8418789035128205" data-ad-slot="1866892772" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            </div>
+        </div>
+        <div>
+            <p>Introducing Pi7 Image Reducer - your go-to solution for reducing image size in KB without compromising quality. Whether you're preparing to submit documents on government portals, apply for jobs, or seek college admissions, our tool streamlines the process of compressing images while ensuring they meet the required size limits.</p>
+            <p>Our handy image tool is made to help you adjust images just the way you need. It can customize your JPEG and PNG images to meet specific size requirements of 20KB, 50KB, and 100 KB by reducing image size.</p>
+            <center><img width="780px" height="457px" src="https://image.pi7.org/static/img/reduce_image_size.jpeg" alt="Reduce Image Size With Pi7 Image Reducer"></center>
+            <h2>How to Reduce Image Size in KB:</h2>
+            <ol>
+                <li><b>Upload Your Image:</b> Begin by uploading the image you need to reduce in size.</li>
+                <li><b>Enter Compression Size:</b> Enter the desired KB (default 100kb) size you want your image to be compressed to.</li>
+                <li><b>Click Reduce Size:</b> Click the "Reduce Size" button and wait for 3-4 seconds for the resizing process to complete.</li>
+                <li><b>Download and Use:</b> Once the resizing process is complete, you can download your newly resized image of the desired KB size.</li>
+            </ol>
+            <h2>Key Features:</h2>
+            <p>Our Pi7 Image Reducer is specifically designed to make the process of resizing and reducing your images in KB quick and hassle-free. Here are some reasons why you should choose our tool:</p>
+            <ul>
+                <li><b>Efficient Size Reduction:</b> Resize images to 100KB with preserved clarity, eliminating oversized files.</li>
+                <li><b>Effortless Photo Resizing:</b> Our user-friendly interface allows you to resize images in KB with just a few clicks. No technical expertise required!</li>
+                <li><b>Simple to Use:</b> Our user-friendly interface requires no technical expertise. Reduce image size in KB with just a few clicks, making it suitable for users of all skill levels.</li>
+                <li><b>Quick Results:</b> Pi7 Image Reducer delivers speedy compression, ensuring your images are ready for submission without delay.</li>
+                <li><b>Flexible Options:</b> Reduce size of JPEG to 20kb, 50kb, 100kb, 500KB, or any size needed.</li>
+                <li><b>Quick and Secure:</b> Resize your images swiftly without compromising on security.</li>
+            </ul>
+            <p>On the other hand, if you want to <a href="/increase-image-size-in-kb">increase image size in kb</a>, you can also check out our tool for this purpose.</p>
+            <h2>Why Choose Pi7 Image Reducer for your images?</h2>
+            <p>Pi7 Image Reducer is your trusted companion to reduce images to exact KB sizes, whether it is JPEG, PNG, or various other formats - 20KB, 50KB, 100KB, or even 500 KB. Don't let those big images slow you down - our tool is your go-to for job applications, college admissions, and more.</p>
+            <p>With Pi7 Image Reducer, say goodbye to image size worries. Whether you want to trim photo sizes or need a reliable KB photo resizer, our tool is the one-stop solution. Bid farewell to bulky image files and welcome the ease of Pi7 Image Reducer. Try it now to see the difference yourself!</p>
+            <p>Get started compressing images into specific KB sizes today, ensuring your submissions are professional and fit the size requirements perfectly. Pi7 Image Reducer assures seamless quality and compactness, making your work hassle-free and efficient.</p>
+          </div>
+                </section>
+                </div>
+            </div>
+
+
+        
+        <div class="sidecon">
+            <div class="inlineflex">
+                <a href="/increase-image-size-in-kb" class="toolbtn toolbtnfull trackbtn highligncol">Increase Image Size In KB</a>
+                <a href="https://pdf.pi7.org/pdf-to-jpg" class="toolbtn trackbtn">PDF To Images</a>
+                <a href="/watermark-image" class="toolbtn trackbtn">Watermark Image</a>
+                <a href="/convert-dpi" class="toolbtn trackbtn">Change DPI</a>
+                <a href="/image-to-pdf" class="toolbtn trackbtn highligncol">Images To PDF</a>
+                <a href="/generate-signature" class="toolbtn highligncol trackbtn">Signature Maker</a>
+                <a href="https://pdf.pi7.org/" class="trackbtn toolbtn">Pi7 PDF Tool</a>
+                
+            </a>
+        </div>
+        <div class="sdadcon">
+            <div id="sidebarxad" class="addivsens">
+            </div>
+        <div class="sugform">
+            <center>
+                <p>Subscribe Us On Youtube</p>
+                <div class="g-ytsubscribe" data-channelid="UCMLxXimXD6CY8xvZrRJys7A" data-layout="full" data-count="hidden">
+                </div></center>
+            <div class="sugestidea">
+                <div class="h4style">Suggest Us New Tool</div>
+               <p>Do You Need any New Tool For Your Work? Suggest Us & We Will Try To Implement That Tool In Website.</p>
+            </div>    
+            <div class="dform">
+                <textarea placeholder="Type Your Suggestion" id="sugestiontxtar" rows="5" required name="sug" class="sugbox"></textarea>
+                <input name="email" class="emailinp" type="email" placeholder="Your Email (Optional)">
+                <button id="subformbt" type="submit">Send Feedback</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+</div>
+<div class="croppopus croppopusANIM">
+    <span onclick="$('.croppopus').hide()" class="close">&times;</span>
+    <div class="image_container"> <img id="crpiid" src="#" alt="Your Image For Crop" /></div>
+    <div class="sliderrg">
+        <label class="tiptext">Rotate Image By Moving Slider</label>
+        <input oninput="rotateimagecr()" id="rimgslide" type="range" min="-180" max="180" value="0">
+        <label class="tiptext">Zoom In Image By Moving Slider</label>
+        <input oninput="zoomimagecr()" id="zomimgslide" type="range" min="10" max="200" value="71">
+    </div>
+    <div class="widandhigh">
+            <div>Resize Image In <div><span dm="PX" class="active sizbtna pxspan" data="pxspan">Pixels</span> <span class="mmspan sizbtna"  data="mmspan" dm="MM">MM (Millimeter)</span> <span  data="cmspan" class="cmspan sizbtna" dm="CM">CM (Centimetre)</span></div></div>
+            <p class="tiptext">Please enter the width and height of the image you wish to resize:</p>
+            <div class="widandssd">
+                <div class="dpisecd hide">DPI:<input value="300" min="1" max="1000" id="dpi_inp" type="number"><span class="dpidim">DPI</span> &nbsp; </div>
+                <div><label for="widinp">Width: </label> <input min="0.1" max="3000" id="widinp" type="number"><span class="dimentyp">PX</span></div> <div> <label for="highinp">Height: </label> <input id="highinp" min="0.1" max="3000" type="number"><span class="dimentyp">PX</span></div>
+            </div>
+    </div>    
+    <div class="img_cp_btns">
+        <button id="cropimagedone" class="compressbtn">Crop Image</button>
+        <button id="resizeimagedone" class="compressbtn">Resize Image</button>
+        <button onclick="$('.croppopus').hide()" class="compressbtn canclebtn">Cancel</button>
+    </div>
+</div>
+<footer>
+    <div class="wrap-cont">
+        <div class="wr-div">
+            <img width="110" height="63" alt="Pi7 Image Tool LOGO" src="/static/img/svgicons/pi7.svg">
+            <div class="social">
+                <p>Rest assured, your images are automatically removed from our server after 30 Mins of compression. Your privacy matters to us at PI7 Image Tool.</p>    
+                <p>Follow Us On Social Platforms</p>
+
+                <a target="__blank" href="https://www.youtube.com/channel/UCMLxXimXD6CY8xvZrRJys7A"><img alt="Pi7 Code Solutions Youtube Channel" width="50px" height="50px" src="/static/img/yt.svg"></a>
+                <a target="__blank" href="https://www.facebook.com/pi7code"><img alt="Pi7 Code Solutions Facebook Page" width="50px" height="50px" src="/static/img/fb.svg"></a>
+                
+            </div>
+        </div>
+        <div class="wr-div">
+            <div class="h4style">GIF Tools</div>
+            <ul>
+                <li><a target="_blank" rel="dofollow" href="https://gif.pi7.org/gif-maker">GIF Maker</a></li>
+                <li><a target="_blank" rel="dofollow" href="https://gif.pi7.org/gif-compressor">GIF Compressor</a></li>
+                <li><a target="_blank" rel="dofollow" href="https://gif.pi7.org/write-text-on-gif">Add Text to GIFs</a></li>
+                <li><a target="_blank" rel="dofollow" href="https://gif.pi7.org/video-to-gif">Convert Video to GIF</a></li>
+            </ul>
+        </div>
+        <div class="wr-div">
+            <div class="h4style">Pi7 Tools</div>
+            <ul>
+                <li><a target="_blank" rel="dofollow" title="Compress and Convert PDF Files" href="https://pdf.pi7.org">Pi7 PDF Tool</a></li>
+                <li><a target="_blank" rel="dofollow" title="Bulk Image Resizer - Resize Multiple Images" href="https://bulkresizer.pi7.org">Bulk Image Resizer</a></li>
+                <li><a target="_blank" rel="dofollow" href="/image-tool-list">List Of Image Tools</a></li>
+            </ul>
+        </div>
+        <div class="wr-div">
+            <div class="h4style">Other Tools</div>
+            <ul>
+                <li><a target="_blank" rel="dofollow" href="https://smalljpg.org">SmallJPG</a></li>
+                <li><a target="_blank" rel="dofollow" href="https://thispersonnotexist.org">This Person Does Not Exist</a></li>
+                <li><a target="_blank" rel="dofollow" href="https://generateinvoice.org">Generate Invoice</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="extra-fot">
+    
+    <a href="/contact-us" >Contact US</a> | 
+    <a href="/policy" >Privacy Policy</a> | 
+    <a href="/terms" >Terms Of Use</a> | 
+    <a target="_blank" rel="dofollow" href="/id">Indonesian Version</a> |
+    <a target="_blank" rel="dofollow" href="/es">Spanish Version</a> |
+    <a target="_blank" rel="dofollow" href="/ru">Russian Version</a> |
+    <a target="_blank" rel="dofollow" href="/image-tools-for-pakistan-users">Tools For Pakistan</a>
+</div>
+</footer>
+<span class="footcre">
+    Made With ♥ By &nbsp; <a target="__blank" href="https://pi7.org"> Pi7</a>
+</span>
+<div class="spinneroverlay" id="spinneroverl">
+    <div class="fancy-spinner">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+<script src="/static/js/script_ad.js?v=2126"></script>
+
+
+<script>
+    if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("service-worker.js")
+  })
+
+  window.addEventListener('appinstalled', (evt) => {
+    fetch('https://image.pi7.org/submit_install', {
+    method: 'POST',
+    headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+    },
+    body: `platform=${window.navigator.platform}`
+})
+});
+
+}
+window.addEventListener("load", (event) => { try{document.getElementById('spinneroverl').classList.add('hide')}catch{} });
+window.onbeforeunload = function() { 
+    try{
+    document.getElementById('spinneroverl').classList.remove('hide') 
+    setTimeout(() => {
+        document.getElementById('spinneroverl').classList.add('hide') 
+    }, 2500);}
+    catch{}
+};
+   </script>
+</body>
+</html>
