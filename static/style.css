@@ -422,7 +422,7 @@ a:hover {
 .ads-container {
   margin: var(--space-lg) auto;
   max-width: 728px;
-  min-height: 900px;
+  min-height: 150px;
   background-color: rgba(229, 231, 235, 0.5);
   display: flex;
   align-items: center;
