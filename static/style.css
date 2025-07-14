@@ -217,12 +217,92 @@ a:hover {
   background-color: var(--primary-dark);
 }
 
-/* Image Preview */
-#previewContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
+/* Preview Items */
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 1rem;
+}
+
+.preview-image-container {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.preview-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.preview-filename {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.preview-stats {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.preview-status {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.preview-status.error {
+  color: #ef4444;
+}
+
+.preview-actions {
+  flex-shrink: 0;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-btn:hover {
+  background: var(--primary-dark);
+}
+
+.download-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.dragover {
+  border-color: var(--primary) !important;
+  background: rgba(37, 99, 235, 0.05) !important;
 }
 
 /* Feature Description */
@@ -342,7 +422,7 @@ a:hover {
 .ads-container {
   margin: var(--space-lg) auto;
   max-width: 728px;
-  min-height: 90px;
+  min-height: 900px;
   background-color: rgba(229, 231, 235, 0.5);
   display: flex;
   align-items: center;
