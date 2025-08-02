@@ -1,8 +1,7 @@
-/* Root Variables */
+/* ====== Root Variables ====== */
 :root {
   --primary-color: #4361ee;
   --primary-dark: #3a56d4;
-  --secondary-color: #3f37c9;
   --accent-color: #4895ef;
   --light-color: #f8f9fa;
   --dark-color: #212529;
@@ -10,62 +9,53 @@
   --light-gray: #e9ecef;
   --success-color: #4bb543;
   --error-color: #ff3333;
-  --warning-color: #ffcc00;
   --border-radius: 8px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
   --transition: all 0.2s ease;
 }
 
-/* Base Container */
-.compress-image {
+/* ====== Main Container ====== */
+.mainsec {
   max-width: 800px;
-  margin: 1.5rem auto;
-  padding: 0;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.maincont h1 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.headsupport {
+  text-align: center;
+  color: var(--gray-color);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ====== Upload Section ====== */
+.upload-section {
   background: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   overflow: hidden;
-}
-
-/* Header */
-.compress-image h1 {
-  text-align: center;
-  margin: 1rem 0;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  padding: 0 1.5rem;
-}
-
-/* Section Containers */
-.upload-container,
-.compression-options,
-.preview-section {
-  background: white;
-  padding: 1.25rem 1.5rem;
-  margin: 0;
-  border-bottom: 1px solid var(--light-gray);
-}
-
-/* Remove last border */
-.preview-section {
-  border-bottom: none;
-}
-
-/* Uploader Section - Larger Clickable Area */
-.upload-container {
   margin-bottom: 1rem;
-  cursor: pointer;
+}
+
+.upload-container {
   padding: 1rem;
+  cursor: pointer;
 }
 
 .upload-box {
   border: 2px dashed var(--primary-color);
   border-radius: var(--border-radius);
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   background-color: rgba(67, 97, 238, 0.03);
-  position: relative;
   transition: var(--transition);
 }
 
@@ -73,42 +63,249 @@
   background-color: rgba(67, 97, 238, 0.06);
 }
 
-.upload-box i {
-  font-size: 2.25rem;
-  color: var(--primary-color);
-  margin-bottom: 0.75rem;
-}
-
-.upload-box h3 {
-  font-size: 1.1rem;
+.svgUpload {
+  width: 80px;
+  height: 80px;
   margin-bottom: 0.5rem;
 }
 
-.upload-box p {
-  font-size: 0.9rem;
-  color: var(--gray-color);
-  margin-bottom: 0.25rem;
-}
-
-.upload-box p span {
+.btnsel {
   color: var(--primary-color);
   font-weight: 600;
 }
 
-#imageInput {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
 .supported-formats {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--gray-color);
   text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* ====== Compression Options ====== */
+.compression-options {
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid var(--light-gray);
+}
+
+.compression-options label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+
+.option-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#targetSize {
+  flex: 1;
+  max-width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius);
+}
+
+.kbinput {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--gray-color);
+}
+
+#compressBtn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  flex: 1;
+  max-width: 120px;
+}
+
+#compressBtn:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+#compressBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ====== Loading Indicator ====== */
+#loadingIndicator {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  display: none;
+}
+
+/* ====== Preview Container ====== */
+#previewContainer {
+  padding: 0 1rem 1rem;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 0.75rem;
+}
+
+.preview-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.preview-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-name {
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-stats {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--gray-color);
+  margin-top: 0.25rem;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.download-btn,
+.remove-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.download-btn {
+  background: var(--success-color);
+  color: white;
+}
+
+.remove-btn {
+  background: var(--error-color);
+  color: white;
+}
+
+/* ====== Ad Container ====== */
+.ads-container {
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid var(--light-gray);
+  position: relative;
+}
+
+.ads-container::before {
+  content: "Advertisement";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--gray-color);
+}
+
+/* ====== Responsive Adjustments ====== */
+@media (max-width: 600px) {
+  .mainsec {
+    padding: 0.5rem;
+  }
+  
+  .maincont h1 {
+    font-size: 1.3rem;
+  }
+  
+  .upload-box {
+    padding: 1rem;
+  }
+  
+  .svgUpload {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .option-row {
+    flex-wrap: wrap;
+  }
+  
+  #targetSize {
+    max-width: 60px;
+  }
+  
+  #compressBtn {
+    max-width: 100%;
+  }
+  
+  .preview-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .preview-info {
+    width: 100%;
+  }
+  
+  .preview-stats {
+    justify-content: center;
+  }
+  
+  .preview-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ====== Viewport Height Optimization ====== */
+@media (max-height: 700px) {
+  .upload-section {
+    margin-bottom: 0.5rem;
+  }
+  
+  .upload-box {
+    padding: 1rem;
+  }
+  
+  .compression-options {
+    padding: 0.75rem 1rem;
+  }
+  
+  #previewContainer {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .preview-item {
+    padding: 0.5rem;
+  }
+}  text-align: center;
   margin-top: 0.75rem;
 }
 
